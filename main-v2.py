@@ -559,6 +559,7 @@ def convert(data,names):
 
 def experiment(input, output):
   filei = open(input,'r')
+  fileo = open(output,"w")
   line = filei.readline()
   sizes = list(map(int, line.split()))
   results = dict()
@@ -570,6 +571,7 @@ def experiment(input, output):
 
 
   lines = filei.readlines()
+
 
   av0= 0.0
   n = 0
@@ -588,7 +590,6 @@ def experiment(input, output):
   avs5 = 0
   av6 = 0
   avs6 = 0
-
 
 
   for line in lines:
@@ -619,6 +620,7 @@ def experiment(input, output):
             size1+= 1
         size0 *= (network.get_cardinality(v)-1)
         size1 *= network.get_cardinality(v) -1
+        
         if len(par)>1:
           bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
 
@@ -708,7 +710,7 @@ def experiment(input, output):
           print(w0,w3)
           print(w34,w43)
           print(w35,w53)
-
+          fileo.write(f'{line},{v},{size0},{x},{size3}, {size4},{size5},{size6},  {logli0}, {logli3}, {logli4},{logli5}, {logli6}\n')
 
           print(avs0/n,avs3/n,avs4/n,avs5/n,avs6/n)
       results[x,0] = av0/n
@@ -733,7 +735,81 @@ def experiment(input, output):
 
    
 
+def experiment2(input, output,alpha=0.1):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizes = list(map(int, line.split()))
+  results = dict()
+  asize = dict()
+  database = dict()
+      
+  
+  
 
+
+  lines = filei.readlines()
+
+
+
+
+
+  for line in lines:
+    line = line.strip()
+    reader = BIFReader("./Networks/"+line)
+    print(line)
+    network = reader.get_model()
+    for v in network.nodes():
+      par = network.get_parents(v)
+      
+    sampler = BayesianModelSampling(network)
+    datatest = sampler.forward_sample(size=1000)
+    
+
+    for x in sizes:
+      database = sampler.forward_sample(size=x)
+      database2 =   sampler.forward_sample(size=x)
+      
+      for v in network.nodes():
+        par = network.get_parents(v) 
+        size0 = 1.0
+        size1= 0.0
+        for v2 in par:
+            size0 *= network.get_cardinality(v2)
+            size1+= 1
+        size0 *= (network.get_cardinality(v)-1)
+        size1 *= network.get_cardinality(v) -1
+        
+        if len(par)>1:
+          bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
+
+          table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+          tree = probabilitytree()
+          tree.fit(database,par,v, names = network.states,s=20, double=True)
+          vvalues = database2[v]
+          parvalues = database2[par]
+          randomvalues = np.random.choice(network.states[v], x)
+          proba = np.random.uniform(0, 100,x)
+          change = [proba<=alpha]
+          p0 = estimateprob(parvalues,vlalues)
+
+           
+          
+
+          
+
+
+     
+
+
+  for x in sizes:
+    print(x)
+    print(results[x,0] ,results[x,3] ,results[x,4] ,results[x,5] ,results[x,6])
+    print(asize[x,0], asize[x,3],asize[x,4],asize[x,5],asize[x,6] )
+
+
+
+   
 
 
 
