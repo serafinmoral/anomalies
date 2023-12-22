@@ -9,6 +9,7 @@ from pgmpy.readwrite import BIFReader
 from pgmpy.sampling.Sampling import BayesianModelSampling
 from pgmpy.estimators import BayesianEstimator,BDeuScore
 import pandas as pd
+import time
 
 
 def select(data,features,target,names,s, bas=[]):
@@ -731,9 +732,280 @@ def experiment(input, output):
     print(results[x,0] ,results[x,3] ,results[x,4] ,results[x,5] ,results[x,6])
     print(asize[x,0], asize[x,3],asize[x,4],asize[x,5],asize[x,6] )
 
+def transform(x):
+  return {i: x[i] for i in x.index}
+
+def transform2(x,v,par):
+
+  h =  dict()
+  h[v] = x[v]
+  for i in par:
+    h[i] = x[i]
+
+  return h
+
+def estimateprob(table,v,states,parvalues, eps = 0.001):
+  p0 = 0.5
+  n = len(states)
+  phi= table.to_factor()
+  tot = parvalues.shape[0]
+     
+  prob = np.array(parvalues.apply(lambda x: phi.get_value(**transform(x)),axis=1))
+
+  proa = np.full(tot, 1/n)
+
+  prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+  p1 = prop.sum()/tot
+
+  while(abs(p1-p0)>eps):
+    print(p0)
+    p0 = p1
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    p1 = prop.sum()/tot
 
 
-   
+  return(p1,prop)
+
+
+def estimateprobem(bayest,v,par,states,parvalues, eps = 0.001):
+  p0 = 0.5
+  n = len(states)
+  tot = parvalues.shape[0]
+
+  table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+
+  prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
+
+  proa = np.full(tot, 1/n)
+
+  vlog = np.vectorize(math.log)
+  like = vlog(p0 * proa + (1-p0)*prob)
+  
+
+  x = like.sum()
+
+  old = 0
+
+  print(0.5,x)
+  first = True
+  while x-old> eps or first:
+    first = False
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    p1 = prop.sum()/tot
+    parvalues['_weight'] = 1-prop
+
+    table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2, weighted=True)
+    old = x
+
+    prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
+    like = vlog(p1 * proa + (1-p1)*prob)
+    x = like.sum()
+    p0 = p1
+    print(p1, x)
+
+
+  return(p1,prop, table)
+
+def categor(table,p0,v,states,parvalues, eps = 0.001):
+  n = len(states)
+  phi= table.to_factor()
+  tot = parvalues.shape[0]
+     
+  prob = np.array(parvalues.apply(lambda x: phi.get_value(**transform(x)),axis=1))
+
+  proa = np.full(tot, 1/n)
+
+  prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+
+  
+
+
+  return prop
+
+
+
+def categort(tree,p0,v,states,parvalues, eps = 0.001):
+  n = len(states)
+  tot = parvalues.shape[0]
+
+  prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+  proa = np.full(tot, 1/n)
+
+  prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+
+  
+
+
+  return prop
+
+
+def estimateprobt(tree,v,states,parvalues, eps = 0.001):
+  p0 = 0.5
+  n = len(states)
+  tot = parvalues.shape[0]
+  prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+  proa = np.full(tot, 1/n)
+
+  prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+  p1 = prop.sum()/tot
+
+  while(abs(p1-p0)>eps):
+    print(p0)
+    p0 = p1
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    p1 = prop.sum()/tot
+
+
+  return(p1,prop)
+
+def randommodify(vvalues,states,alpha=0.1):
+    
+    x = vvalues.values.shape[0]
+    randomvalues = np.random.choice(states, x)
+
+    proba = np.random.uniform(0, 1,x)
+
+    change = proba<=alpha
+
+    for i in range(len(change)):
+            if change[i]:
+              vvalues.loc[i] = randomvalues[i] 
+
+def experiment3(input, output,alpha=0.1):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizes = list(map(int, line.split()))
+  results = dict()
+  asize = dict()
+  database = dict()
+      
+  
+  
+
+
+  lines = filei.readlines()
+  w = 0
+  l = 0
+
+
+
+
+  for line in lines:
+    line = line.strip()
+    reader = BIFReader("./Networks/"+line)
+    print(line)
+    network = reader.get_model()
+    for v in network.nodes():
+      par = network.get_parents(v)
+      
+    sampler = BayesianModelSampling(network)
+    ts = 1000
+    datatest = sampler.forward_sample(size=ts)
+
+
+    for x in sizes:
+      database = sampler.forward_sample(size=x)
+      database2 = sampler.forward_sample(size=x)
+
+      for v in network.nodes():
+        par = network.get_parents(v) 
+        size0 = 1.0
+        size1= 0.0
+        for v2 in par:
+            size0 *= network.get_cardinality(v2)
+            size1+= 1
+        size0 *= (network.get_cardinality(v)-1)
+        size1 *= network.get_cardinality(v) -1
+        
+        if len(par)>1:
+
+          vvalues = database2[v].copy()
+          randommodify(vvalues,network.states[v])
+          
+          
+          database2['_weight'] = [1]*database2.shape[0]
+          bayest = BayesianEstimator(model=network, data=database2, state_names=network.states)
+
+          (p0,changee,table) = estimateprobem(bayest,v,par,network.states[v],database2)
+
+
+          bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
+
+          table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+          
+          randomvalues = np.random.choice(network.states[v], x)
+          randomvaluest = np.random.choice(network.states[v], ts)
+
+          proba = np.random.uniform(0, 1,x)
+          probat = np.random.uniform(0, 1,x)
+
+          change = proba<=alpha
+          changet = probat<=alpha
+
+          database2[v] = vvalues
+
+
+          for i in range(len(change)):
+            if change[i]:
+              vvalues.loc[i] = randomvalues[i] 
+          for i in range(len(changet)):
+            if changet[i]:
+              vvaluest.loc[i] = randomvaluest[i] 
+          parvalues[v] = vvalues
+          parvaluest[v] = vvaluest
+
+          (p0,changee) = estimateprob(table,v,network.states[v],parvalues)
+          (p0t,changeet) = estimateprobt(tree,v,network.states[v],parvalues)
+
+
+       
+
+          # changee2 = categor(table,p0,v,network.states[v],parvaluest)
+          sl2 = 0.0
+          slt2 = 0.0
+          sumc = 0.0
+          sumnc  = 0.0
+          nc = 0
+          nnc = 0
+          
+          sumct = 0.0
+          sumnct  = 0.0
+          nct = 0
+          nnct = 0
+
+          
+          # for i in range(len(changet)):
+          #   if changet[i]:
+          #     sumc += changee2[i]
+          #     nc += 1
+          #     sumct += changeet2[i]
+          #     nct += 1
+          #     sl2 += math.log(changee2[i])
+          #     slt2 += math.log(changeet2[i])
+          # else:
+          #     sumnc += changee2[i]
+          #     nnc += 1
+          #     sumnct += changeet2[i]
+          #     nnct += 1
+          #     sl2 += math.log(1-changee2[i])
+          #     slt2 += math.log(1-changeet2[i])
+          # if slt2 > sl2:
+          #   w+=1
+          # elif slt2 < sl2:
+          #   l+=1
+          
+          # print(sl2/ts,slt2/ts , w, l)
+          # print(p0,sumc/nc,sumnc/nnc)
+          # print(p0t,sumct/nct,sumnct/nnct)
+
+          time.sleep(3)
+            
+          
+
+          
+
 
 def experiment2(input, output,alpha=0.1):
   filei = open(input,'r')
@@ -749,7 +1021,8 @@ def experiment2(input, output,alpha=0.1):
 
 
   lines = filei.readlines()
-
+  w = 0
+  l = 0
 
 
 
@@ -763,13 +1036,14 @@ def experiment2(input, output,alpha=0.1):
       par = network.get_parents(v)
       
     sampler = BayesianModelSampling(network)
-    datatest = sampler.forward_sample(size=1000)
-    
+    ts = 1000
+    datatest = sampler.forward_sample(size=ts)
+
 
     for x in sizes:
       database = sampler.forward_sample(size=x)
       database2 =   sampler.forward_sample(size=x)
-      
+ 
       for v in network.nodes():
         par = network.get_parents(v) 
         size0 = 1.0
@@ -786,14 +1060,104 @@ def experiment2(input, output,alpha=0.1):
           table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
           tree = probabilitytree()
           tree.fit(database,par,v, names = network.states,s=20, double=True)
-          vvalues = database2[v]
+          vvalues = database2[v].copy()
           parvalues = database2[par]
+          vvaluest = datatest[v].copy()
+          parvaluest = datatest[par]
           randomvalues = np.random.choice(network.states[v], x)
-          proba = np.random.uniform(0, 100,x)
-          change = [proba<=alpha]
-          p0 = estimateprob(parvalues,vlalues)
+          randomvaluest = np.random.choice(network.states[v], ts)
 
-           
+          proba = np.random.uniform(0, 1,x)
+          probat = np.random.uniform(0, 1,x)
+
+          change = proba<=alpha
+          changet = probat<=alpha
+
+          for i in range(len(change)):
+            if change[i]:
+              vvalues.loc[i] = randomvalues[i] 
+          for i in range(len(changet)):
+            if changet[i]:
+              vvaluest.loc[i] = randomvaluest[i] 
+          parvalues[v] = vvalues
+          parvaluest[v] = vvaluest
+
+          (p0,changee) = estimateprob(table,v,network.states[v],parvalues)
+          (p0t,changeet) = estimateprobt(tree,v,network.states[v],parvalues)
+
+
+          sumc = 0.0
+          sumnc  = 0.0
+          nc = 0
+          nnc = 0
+          sl = 0.0
+          slt = 0.0
+          sumct = 0.0
+          sumnct  = 0.0
+          nct = 0
+          nnct = 0
+          for i in range(len(change)):
+            if change[i]:
+              sumc += changee[i]
+              nc += 1
+              sumct += changeet[i]
+              nct += 1
+              sl += math.log(changee[i])
+              slt += math.log(changeet[i])
+
+            else:
+              sumnc += changee[i]
+              nnc += 1
+              sumnct += changeet[i]
+              nnct += 1
+              sl += math.log(1-changee[i])
+              slt += math.log(1-changeet[i])
+
+          print(p0,sumc/nc,sumnc/nnc)
+          print(p0t,sumct/nct,sumnct/nnct)
+          print(sl/x,slt/x, 1 if sl>slt else 0)
+
+          changee2 = categor(table,p0,v,network.states[v],parvaluest)
+          changeet2 = categort(tree,p0,v,network.states[v],parvaluest)
+          sl2 = 0.0
+          slt2 = 0.0
+          sumc = 0.0
+          sumnc  = 0.0
+          nc = 0
+          nnc = 0
+          
+          sumct = 0.0
+          sumnct  = 0.0
+          nct = 0
+          nnct = 0
+
+          
+          for i in range(len(changet)):
+            if changet[i]:
+              sumc += changee2[i]
+              nc += 1
+              sumct += changeet2[i]
+              nct += 1
+              sl2 += math.log(changee2[i])
+              slt2 += math.log(changeet2[i])
+          else:
+              sumnc += changee2[i]
+              nnc += 1
+              sumnct += changeet2[i]
+              nnct += 1
+              sl2 += math.log(1-changee2[i])
+              slt2 += math.log(1-changeet2[i])
+          if slt2 > sl2:
+            w+=1
+          elif slt2 < sl2:
+            l+=1
+          
+          print(sl2/ts,slt2/ts , w, l)
+          print(p0,sumc/nc,sumnc/nnc)
+          print(p0t,sumct/nct,sumnct/nnct)
+
+          time.sleep(3)
+            
           
 
           
@@ -819,7 +1183,7 @@ def experiment2(input, output,alpha=0.1):
 
 
 
-experiment('input','output')
+experiment3('input','output')
 
 # # read dataset
 # # dataset = sklearn.datasets.fetch_covtype(as_frame = True)
