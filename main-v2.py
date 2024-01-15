@@ -10,6 +10,223 @@ from pgmpy.sampling.Sampling import BayesianModelSampling
 from pgmpy.estimators import BayesianEstimator,BDeuScore
 import pandas as pd
 import time
+import random as rd
+import networkx as nx
+
+def e_stepn(weights, pc,w):
+  probs = weights*w
+  den = probs.sum(axis=1)
+  size = den.shape[0]
+  den = den.reshape((size,1))
+  probs = probs/den
+  logop = lambda t: math.log(t)
+  loglike = sum(np.array([logop(xi) for xi in den]))
+
+  return probs, loglike
+
+
+def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
+  # get target column
+  
+
+  counts = probs.sum(axis=0)
+  counts = counts + s
+  counts = counts/counts.sum()
+
+  expect = probs*pc
+
+  w2 = expect.sum(axis=1)
+
+  w1 = 1-w2
+
+  nc = dataset.shape[0]
+  weights = np.ones((nc,len(pc)))
+  
+  
+  lwt = dict()
+  lws = dict()
+
+  # learn logistic regression model
+  bayest = BayesianEstimator(model=net, data=dataset, state_names=net.states)
+
+  dataset['_weight'] = w1
+  
+
+  # learn logistic regression model
+  for v in net.nodes():
+    if version=='ta':
+      table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2,weighted=True)
+      models[v] = table
+      lwt =getprobs(table,dataset)
+    elif version=='tr':
+      models[v].updatew(dataset,  v, net.states, s=2)
+      lwt = getprobst(models[v],dataset)
+    lws = np.full(nc,1/len(net.states[v]))
+
+    for i in range(len(pc)):
+       weights[:,i] = weights[:,i] *( pc[i] * lws + (1-pc[i]) * lwt) 
+  
+  return weights,models,counts,w2
+
+
+def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, version='ta'):
+  # initialy all the instances have the same weight
+  nc = dataset.shape[0]
+  weights = np.ones((nc,len(pc)))
+  
+  
+  models = dict()
+  lwt = dict()
+  lws = dict()
+
+  # learn logistic regression model
+  w = np.ones(nc)
+  bayest = BayesianEstimator(model=net, data=dataset, state_names=net.states)
+
+  dataset['_weight'] = w
+  for v in net.nodes():
+    if version == 'ta':
+      table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+      models[v] = table
+      lwt[v] = getprobs(table,dataset)
+    elif version=="tr":
+      par = net.get_parents(v)
+      tree = probabilitytree()
+      tree.fit(dataset,par,v, names = net.states,s=10)
+      lwt[v] = getprobst(tree,dataset)
+      models[v] = tree
+
+    lws[v] = np.full(nc,1/len(net.states[v]))
+
+    for i in range(len(pc)):
+       weights[:,i] = weights[:,i] *( pc[i] * lws[v] + (1-pc[i]) * lwt[v]) 
+  
+  probs = weights*wc
+  den = probs.sum(axis=1)
+  size = den.shape[0]
+  den = den.reshape((size,1))
+  probs = probs/den
+  loglike_best = float('-inf')
+  counts = probs.sum(axis=0)
+  counts = counts + s
+  counts = counts/counts.sum()
+
+  for i in range(1, iterations+1):
+    probs, loglike = e_stepn(weights,pc,counts)
+    if loglike > loglike_best+epsilon:
+      loglike_best = loglike
+      print("Improvement: " , loglike_best)
+    
+    else:
+      break
+
+    # perform maximization step
+    weights,models, counts, w2 = m_stepn(dataset,net,probs, pc, s, version=version, models=models)
+    
+   
+
+    # makes a new expectation step for updating loglike
+    # wr, ws, loglike = e_step(wr, ws, alpha_n)
+
+    # checks for the improvement
+    
+
+  # return best models
+  return models, counts, w2
+
+
+
+
+
+def transformt(data,net):
+    snames = net.states
+    for var in net.nodes():
+      data[var] = data[var].apply(lambda x: snames[var].index(x))
+
+def forward_sample_noisy(
+        network,
+        size=1,
+        changes = (0,0.2,0.5,0.7,1),
+        pchanges = (0.8,0.03,0.02,0.05,0.1),
+        seed=None
+    ):
+        """
+        Generates sample(s) from joint distribution of the bayesian network with noise
+
+
+        Parameters
+        ----------
+        size: int
+            size of sample to be generated
+
+        
+
+        seed: int (default: None)
+            If a value is provided, sets the seed for numpy.random.
+
+        show_progress: boolean
+            Whether to show a progress bar of samples getting generated.
+
+        
+
+        Returns
+        -------
+        sampled: pandas.DataFrame
+            The generated samples
+
+        
+        """
+        sampled = pd.DataFrame(columns=list(network.nodes()))
+
+        
+        pbar = list(nx.topological_sort(network))
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        pchan = rd.choices(changes,pchanges,k=size)
+        for j in range(size):
+            row = dict()
+            for node in pbar:
+                    cha = rd.choices([True,False],(pchan[j],1-pchan[j]))
+                    if cha[0]:
+                       row[node] = rd.choice(network.states[node])
+                    else:
+                        cpd = network.get_cpds(node)
+                    
+                        states = network.states[node]
+
+
+
+                        evidence = cpd.variables[:0:-1]
+                    
+                        if evidence:
+                            evidence_values = [row[i] for i in evidence]
+                            table = network.get_cpds(node)
+                            slice_ = [slice(None)] * len(cpd.variables)
+                            for var  in evidence:
+                                var_index = cpd.variables.index(var)
+                                slice_[var_index] = cpd.get_state_no(var,row[var])
+                            weights = cpd.values[tuple(slice_)]
+
+                           
+                            
+                            
+                            
+                        
+                        else:
+                            weights = cpd.values
+                        row[node] = rd.choices(network.states[node],weights)[0]
+
+            sampled.loc[len(sampled)] = row
+
+        sampledn = sampled.copy()
+        transformt(sampledn,network)
+
+        # samples_df = _return_samples(sampled, network.state_names_map)
+
+        return (sampled,sampledn,pchan)
+
 
 
 def select(data,features,target,names,s, bas=[]):
@@ -52,8 +269,10 @@ class probabilitytree:
     model = None
     leaf = True
 
+
+
   def fit(self,data, features , target, names, s, double=False):
-    frequencies = data[target].value_counts()
+    frequencies = data[target].value_counts().to_dict()
     if not features or all(x==0 for x in frequencies):
       self.frequencies = frequencies
       self.node = target
@@ -68,7 +287,6 @@ class probabilitytree:
           features.remove(node)
       
           (node2,score2)= select(data,features,target,names,s, [node])
-          print("segundo",node2,score2)
           features.append(node)
         if not double or len(features)<=1 or score2<=0:
             self.frequencies = frequencies
@@ -129,7 +347,28 @@ class probabilitytree:
           features.append(node)
       
       return self
-  
+
+
+  def updatew(self,data, v, states, s=2):
+    if not self.leaf:
+      for x in self.children.keys():
+        datax = data.loc[data[self.node] == x]
+        self.children[x].updatew(datax,v,states,s)
+    else:
+        self.frequencies = data.groupby(v)['_weight'].sum().to_dict()
+        
+        
+        for x in states[v]:
+            if not x in self.frequencies:
+              self.frequencies[x] = 0 
+
+
+
+    
+   
+
+    return self
+
   def prune(self,data, target, names, s= 10):
     if self.leaf:
       return self
@@ -167,7 +406,7 @@ class probabilitytree:
     if not self.leaf:
       return self.children[values[v]].getprob(values,s/len(self.children))
     else:
-      total = sum(self.frequencies.values)
+      total = sum(self.frequencies.values())
       total += s
       t = self.frequencies[values[v]]+s/len(self.frequencies)
       return t/total
@@ -549,6 +788,28 @@ def valuate(table,dataset):
   return result/s
 
 
+def getprobs(table,dataset):
+  factor = table.to_factor()
+  s = dataset.shape[0]
+  result = []
+  evidence = table.variables
+
+  for line in dataset.iterrows():
+    index = {v: line[1][v] for v in evidence}
+    x = factor.get_value(**index)  
+    result.append(x)
+  return np.array(result)
+
+
+
+def getprobst(tree,dataset):
+  s = dataset.shape[0]
+  result = []
+
+  for line in dataset.iterrows():
+    x = tree.getprob(line[1],s=2)  
+    result.append(x)
+  return np.array(result)
     
 def convert(data,names):
   result = data.copy()
@@ -786,7 +1047,6 @@ def estimateprobem(bayest,v,par,states,parvalues, eps = 0.001):
 
   old = 0
 
-  print(0.5,x)
   first = True
   while x-old> eps or first:
     first = False
@@ -801,12 +1061,58 @@ def estimateprobem(bayest,v,par,states,parvalues, eps = 0.001):
     like = vlog(p1 * proa + (1-p1)*prob)
     x = like.sum()
     p0 = p1
-    print(p1, x)
+    print(p0,x)
 
 
   return(p1,prop, table)
 
+
+
+def estimateprobtem(bayest,v,par,states,parvalues, eps = 0.001):
+  p0 = 0.5
+  n = len(states)
+  tot = parvalues.shape[0]
+
+  tree = probabilitytree()
+  tree.fit(parvalues,par,  v, states,s=2,double = True)
+  prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+
+  proa = np.full(tot, 1/n)
+
+  vlog = np.vectorize(math.log)
+  like = vlog(p0 * proa + (1-p0)*prob)
+  
+
+  x = like.sum()
+
+  old = 0
+
+  first = True
+  while x-old> eps or first:
+    first = False
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    p1 = prop.sum()/tot
+    parvalues['_weight'] = 1-prop
+    tree.updatew(parvalues,  v, states, s=2)
+    prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+
+    like = vlog(p1 * proa + (1-p1)*prob)
+
+    old = x
+    x = like.sum()
+    p0 = p1
+
+
+  return(p1,prop, tree)
+
+def categorn(models, changes,pchanges, dataset, version='ta'):
+  return 1
+
 def categor(table,p0,v,states,parvalues, eps = 0.001):
+  n = len(states)
+  n = len(states)
   n = len(states)
   phi= table.to_factor()
   tot = parvalues.shape[0]
@@ -872,6 +1178,66 @@ def randommodify(vvalues,states,alpha=0.1):
             if change[i]:
               vvalues.loc[i] = randomvalues[i] 
 
+
+def experiment4(input, output):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizes = list(map(int, line.split()))
+  lines = filei.readlines()
+
+  for line in lines:
+    line = line.strip()
+    reader = BIFReader("./Networks/"+line)
+    print(line)
+    network = reader.get_model()
+    for x in sizes:
+
+      (dfo,df,pchan) = forward_sample_noisy(network,size=x)
+      (dfot,dft,pchant) = forward_sample_noisy(network,size=1000)
+
+      changes = (0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
+      pchanges = (0.9,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,    0.055)
+      tables,counts,w2  = em_algorithmn(network,dfo, changes, pchanges, 30, version='tr')
+      trees,countst,w2t  = em_algorithmn(network,dfo, changes, pchanges, 30, version='ta')
+
+
+      st = dict()
+      c = dict()
+      stt = dict()
+      for x in pchan:
+        st[x] = 0
+        c[x] = 0
+  
+        stt[x] = 0
+
+      for i in range(len(w2)):
+        print(pchan[i], w2[i],w2t[i])
+        c[pchan[i]] +=1
+        st[pchan[i]] += w2[i]
+        stt[pchan[i]] += w2t[i]
+
+      for x in c:
+        print(x)
+        st[x] = st[x]/c[x]
+        stt[x] = stt[x]/c[x]
+
+      print(st)
+      print(stt)
+
+      for i in range(len(changes)):
+        print(changes[i], counts[i],countst[i])
+      print(counts.sum(), countst.sum())
+
+
+
+
+    
+
+
+
+
+
 def experiment3(input, output,alpha=0.1):
   filei = open(input,'r')
   fileo = open(output,"w")
@@ -922,83 +1288,24 @@ def experiment3(input, output,alpha=0.1):
         if len(par)>1:
 
           vvalues = database2[v].copy()
+          vvalueso = vvalues.copy()
+
           randommodify(vvalues,network.states[v])
-          
+          database2[v] = vvalues
           
           database2['_weight'] = [1]*database2.shape[0]
           bayest = BayesianEstimator(model=network, data=database2, state_names=network.states)
 
           (p0,changee,table) = estimateprobem(bayest,v,par,network.states[v],database2)
 
+          (p0t,changeet,tree) = estimateprobtem(bayest,v,par,network.states,database2)
+          database2[v] = vvalueso
 
-          bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
 
-          table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+
           
-          randomvalues = np.random.choice(network.states[v], x)
-          randomvaluest = np.random.choice(network.states[v], ts)
-
-          proba = np.random.uniform(0, 1,x)
-          probat = np.random.uniform(0, 1,x)
-
-          change = proba<=alpha
-          changet = probat<=alpha
-
-          database2[v] = vvalues
-
-
-          for i in range(len(change)):
-            if change[i]:
-              vvalues.loc[i] = randomvalues[i] 
-          for i in range(len(changet)):
-            if changet[i]:
-              vvaluest.loc[i] = randomvaluest[i] 
-          parvalues[v] = vvalues
-          parvaluest[v] = vvaluest
-
-          (p0,changee) = estimateprob(table,v,network.states[v],parvalues)
-          (p0t,changeet) = estimateprobt(tree,v,network.states[v],parvalues)
-
 
        
-
-          # changee2 = categor(table,p0,v,network.states[v],parvaluest)
-          sl2 = 0.0
-          slt2 = 0.0
-          sumc = 0.0
-          sumnc  = 0.0
-          nc = 0
-          nnc = 0
-          
-          sumct = 0.0
-          sumnct  = 0.0
-          nct = 0
-          nnct = 0
-
-          
-          # for i in range(len(changet)):
-          #   if changet[i]:
-          #     sumc += changee2[i]
-          #     nc += 1
-          #     sumct += changeet2[i]
-          #     nct += 1
-          #     sl2 += math.log(changee2[i])
-          #     slt2 += math.log(changeet2[i])
-          # else:
-          #     sumnc += changee2[i]
-          #     nnc += 1
-          #     sumnct += changeet2[i]
-          #     nnct += 1
-          #     sl2 += math.log(1-changee2[i])
-          #     slt2 += math.log(1-changeet2[i])
-          # if slt2 > sl2:
-          #   w+=1
-          # elif slt2 < sl2:
-          #   l+=1
-          
-          # print(sl2/ts,slt2/ts , w, l)
-          # print(p0,sumc/nc,sumnc/nnc)
-          # print(p0t,sumct/nct,sumnct/nnct)
 
           time.sleep(3)
             
@@ -1183,7 +1490,7 @@ def experiment2(input, output,alpha=0.1):
 
 
 
-experiment3('input','output')
+experiment4('input','output')
 
 # # read dataset
 # # dataset = sklearn.datasets.fetch_covtype(as_frame = True)
