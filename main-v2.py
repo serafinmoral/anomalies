@@ -19,7 +19,9 @@ def e_stepn(weights, pc,w):
   size = den.shape[0]
   den = den.reshape((size,1))
   probs = probs/den
-  logop = lambda t: math.log(t)
+  np.nan_to_num(probs, nan=1/len(pc),copy=False)
+
+  logop = lambda t: math.log(max(t,0.0000000001))
   loglike = sum(np.array([logop(xi) for xi in den]))
 
   return probs, loglike
@@ -69,6 +71,79 @@ def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
   return weights,models,counts,w2
 
 
+
+def categorn(net,models, pc,w, dataset, realc, version='ta'):
+  nc = dataset.shape[0]
+  weights = np.ones((nc,len(pc)))
+
+  for v in net.nodes():
+    if version=='ta':
+      lwt =getprobs(models[v],dataset)
+    elif version=='tr':
+      lwt = getprobst(models[v],dataset)
+
+    lws = np.full(nc,1/len(net.states[v]))
+    for i in range(len(pc)):
+       weights[:,i] = weights[:,i] *( pc[i] * lws + (1-pc[i]) * lwt) 
+  probs = weights*w
+  den = probs.sum(axis=1)
+  size = den.shape[0]
+  den = den.reshape((size,1))
+  probs = probs/den
+  np.nan_to_num(probs, nan=1/len(pc),copy=False)
+  expec = (probs*pc).sum(axis=1)
+
+  probout =1 - probs[:,0]
+  
+  loglike = []
+
+  prm = dict()
+  pro = dict()
+  nt = dict()
+
+  for i in range(expec.shape[0]):
+    if realc[i] in prm:
+        prm[realc[i]] += expec[i]
+        pro[realc[i]] += probout[i]
+        nt[realc[i]] += 1
+    else:
+        prm[realc[i]] = expec[i]
+        pro[realc[i]] = probout[i]
+        nt[realc[i]] = 1
+    if realc[i] >0:
+      loglike.append(math.log(probout[i]))
+      
+    else:
+      loglike.append(math.log(max(0.00000000001,1-probout[i])))
+
+  
+
+  diferencia = abs(realc-expec)
+
+  media = np.average(diferencia)
+  ll = sum(loglike)/len(loglike)
+
+  for x in prm.keys():
+    print(x,prm[x]/nt[x],pro[x]/nt[x])
+  print(media,ll)
+
+  return media, ll
+
+
+
+
+    
+
+
+
+
+
+
+
+  
+  return 1
+
+
 def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, version='ta'):
   # initialy all the instances have the same weight
   nc = dataset.shape[0]
@@ -106,6 +181,7 @@ def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, versi
   size = den.shape[0]
   den = den.reshape((size,1))
   probs = probs/den
+  np.nan_to_num(probs, nan=1/len(pc),copy=False)
   loglike_best = float('-inf')
   counts = probs.sum(axis=0)
   counts = counts + s
@@ -113,7 +189,7 @@ def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, versi
 
   for i in range(1, iterations+1):
     probs, loglike = e_stepn(weights,pc,counts)
-    if loglike > loglike_best+epsilon:
+    if loglike > loglike_best+epsilon or i ==1:
       loglike_best = loglike
       print("Improvement: " , loglike_best)
     
@@ -124,14 +200,8 @@ def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, versi
     weights,models, counts, w2 = m_stepn(dataset,net,probs, pc, s, version=version, models=models)
     
    
-
-    # makes a new expectation step for updating loglike
-    # wr, ws, loglike = e_step(wr, ws, alpha_n)
-
-    # checks for the improvement
     
 
-  # return best models
   return models, counts, w2
 
 
@@ -1107,8 +1177,7 @@ def estimateprobtem(bayest,v,par,states,parvalues, eps = 0.001):
 
   return(p1,prop, tree)
 
-def categorn(models, changes,pchanges, dataset, version='ta'):
-  return 1
+
 
 def categor(table,p0,v,states,parvalues, eps = 0.001):
   n = len(states)
@@ -1198,8 +1267,8 @@ def experiment4(input, output):
 
       changes = (0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
       pchanges = (0.9,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,    0.055)
-      tables,counts,w2  = em_algorithmn(network,dfo, changes, pchanges, 30, version='tr')
-      trees,countst,w2t  = em_algorithmn(network,dfo, changes, pchanges, 30, version='ta')
+      trees,counts,w2  = em_algorithmn(network,dfo, changes, pchanges, 30, version='tr')
+      tables,countst,w2t  = em_algorithmn(network,dfo, changes, pchanges, 30, version='ta')
 
 
       st = dict()
@@ -1212,22 +1281,24 @@ def experiment4(input, output):
         stt[x] = 0
 
       for i in range(len(w2)):
-        print(pchan[i], w2[i],w2t[i])
+        # print(pchan[i], w2[i],w2t[i])
         c[pchan[i]] +=1
         st[pchan[i]] += w2[i]
         stt[pchan[i]] += w2t[i]
 
       for x in c:
-        print(x)
+        # print(x)
         st[x] = st[x]/c[x]
         stt[x] = stt[x]/c[x]
 
-      print(st)
-      print(stt)
+      # print(st)
+      # print(stt)
 
-      for i in range(len(changes)):
-        print(changes[i], counts[i],countst[i])
-      print(counts.sum(), countst.sum())
+      # for i in range(len(changes)):
+      #   print(changes[i], counts[i],countst[i])
+      
+      categorn(network,trees, changes,countst, dfot,pchant, version='tr')
+      categorn(network,tables, changes,countst, dfot,pchant, version='ta')
 
 
 
