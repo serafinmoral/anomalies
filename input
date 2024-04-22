@@ -1,6 +1,5 @@
-500
+5000
 alarm.bif
-munin.bif
 diabetes.bif
 andes.bif
 barley.bif
@@ -13,3 +12,5 @@ pathfinder.bif
 pigs.bif
 water.bif
 win95pts.bif
+munin.bif
+

@@ -1,0 +1,1632 @@
+network unknown {
+}
+variable acreage_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable acres_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable agpm_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable agriculture_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable aires_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable argentine_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ascs_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable bargefreight_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable barley_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable belt_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable bread_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable buenos_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable bureaufederation_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable bushel_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable bushels_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cereal_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cereals_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable chaco_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable coarse_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cordoba_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable corn_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cornimports_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable corrientes_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cotton_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable crop_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable cropland_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable crops_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable delivery_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable deliveryduring_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable department_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable destinations_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable dry_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable enrolled_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable enrollment_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable entre_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable export_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable exporters_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable farmer_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable farmers_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable feed_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable feedgrains_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable fordelivery_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable formosa_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable fructose_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable grain_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable grainagreement_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable grains_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable grainsagreement_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable growers_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable guesses_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable harvest_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable harvested_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable hfcs_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable inspections_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable licencesto_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable maize_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable maizeimporters_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable meal_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable mge_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable miscellaneous_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable misiones_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable mlnbushels_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable mlntonnes_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable moisture_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable oats_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ofcorn_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ofmaize_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ofsoybeans_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable pampa_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable pik_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable planted_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable postedcounty_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable rainfall_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable rains_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ranged_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable rice_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable rios_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable riots_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable saidprivate_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable season_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable signup_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable sorghum_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable soviet_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable soybean_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable soybeans_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable sunflower_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable syrup_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable theconservation_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable thecrops_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable thous_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable tonne_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable tonnes_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable tonnesof_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable unknown_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable usda_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable ussr_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable villanueva_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable washington_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable wheat_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+variable yellow_binarized {
+    type discrete [ 2 ] { 0, 1 };
+    property weight = None ;
+}
+probability ( acreage_binarized | crops_binarized, farmers_binarized, usda_binarized ) {
+    ( 0, 0, 0 ) 0.9991872202934035, 0.0008127797065965603;
+    ( 0, 0, 1 ) 0.9765177548682703, 0.023482245131729668;
+    ( 0, 1, 0 ) 0.9675324675324676, 0.032467532467532464;
+    ( 0, 1, 1 ) 0.5353982300884956, 0.4646017699115044;
+    ( 1, 0, 0 ) 0.8781094527363185, 0.12189054726368159;
+    ( 1, 0, 1 ) 0.9210526315789473, 0.07894736842105263;
+    ( 1, 1, 0 ) 0.8711340206185567, 0.12886597938144329;
+    ( 1, 1, 1 ) 0.3048780487804878, 0.6951219512195121;
+
+}
+probability ( acres_binarized | acreage_binarized, bushel_binarized ) {
+    ( 0, 0 ) 0.9974079126875852, 0.002592087312414734;
+    ( 0, 1 ) 0.9888888888888889, 0.011111111111111112;
+    ( 1, 0 ) 0.6882352941176471, 0.31176470588235294;
+    ( 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( agpm_binarized | maize_binarized ) {
+    ( 0 ) 0.9999610014819437, 3.899851805631386e-05;
+    ( 1 ) 0.9551282051282052, 0.04487179487179487;
+
+}
+probability ( agriculture_binarized | tonnes_binarized, usda_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9903355789208588, 0.00966442107914122;
+    ( 0, 0, 1 ) 0.6072261072261073, 0.3927738927738928;
+    ( 0, 1, 0 ) 0.23333333333333334, 0.7666666666666667;
+    ( 0, 1, 1 ) 0.3816568047337278, 0.6183431952662722;
+    ( 1, 0, 0 ) 0.888474913065077, 0.111525086934923;
+    ( 1, 0, 1 ) 0.8467933491686461, 0.15320665083135393;
+    ( 1, 1, 0 ) 0.25722543352601157, 0.7427745664739884;
+    ( 1, 1, 1 ) 0.20397111913357402, 0.796028880866426;
+
+}
+probability ( aires_binarized | buenos_binarized ) {
+    ( 0 ) 0.9998832775659482, 0.00011672243405182475;
+    ( 1 ) 0.03125, 0.96875;
+
+}
+probability ( argentine_binarized | aires_binarized, mlntonnes_binarized ) {
+    ( 0, 0 ) 0.9985718198536604, 0.0014281801463395547;
+    ( 0, 1 ) 0.9413793103448276, 0.05862068965517241;
+    ( 1, 0 ) 0.29518072289156627, 0.7048192771084337;
+    ( 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( ascs_binarized | pik_binarized, postedcounty_binarized, season_binarized ) {
+    ( 0, 0, 0 ) 0.999520106555932, 0.0004798934440679294;
+    ( 0, 0, 1 ) 0.9989517819706499, 0.0010482180293501049;
+    ( 0, 1, 0 ) 0.1, 0.9;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.7222222222222222, 0.2777777777777778;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.1, 0.9;
+    ( 1, 1, 1 ) 0.9444444444444444, 0.05555555555555555;
+
+}
+probability ( bargefreight_binarized | postedcounty_binarized ) {
+    ( 0 ) 0.9999612222739258, 3.8777726074143014e-05;
+    ( 1 ) 0.3, 0.7;
+
+}
+probability ( barley_binarized | maize_binarized, oats_binarized, tonnes_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9997448793643852, 0.0002551206356148407;
+    ( 0, 0, 0, 1 ) 0.9389782403027436, 0.061021759697256386;
+    ( 0, 0, 1, 0 ) 0.9666177549523111, 0.03338224504768892;
+    ( 0, 0, 1, 1 ) 0.9196502914238135, 0.08034970857618651;
+    ( 0, 1, 0, 0 ) 0.9938271604938271, 0.006172839506172839;
+    ( 0, 1, 0, 1 ) 0.4550561797752809, 0.5449438202247191;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 0, 0, 0 ) 0.995575221238938, 0.004424778761061947;
+    ( 1, 0, 0, 1 ) 0.9878048780487805, 0.012195121951219513;
+    ( 1, 0, 1, 0 ) 0.9128113879003559, 0.08718861209964412;
+    ( 1, 0, 1, 1 ) 0.3192090395480226, 0.6807909604519774;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( belt_binarized | dry_binarized, signup_binarized ) {
+    ( 0, 0 ) 0.9993572012933889, 0.0006427987066110873;
+    ( 0, 1 ) 0.5952380952380952, 0.40476190476190477;
+    ( 1, 0 ) 0.9018691588785047, 0.09813084112149532;
+    ( 1, 1 ) 0.5, 0.5;
+
+}
+probability ( bread_binarized | maize_binarized, ranged_binarized, riots_binarized, soviet_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9999974772065613, 2.5227934387188247e-06;
+    ( 0, 0, 0, 0, 1 ) 0.9871591209954991, 0.012840879004500927;
+    ( 0, 0, 0, 1, 0 ) 0.9909589041095891, 0.00904109589041096;
+    ( 0, 0, 0, 1, 1 ) 0.9994324631101021, 0.0005675368898978433;
+    ( 0, 0, 1, 0, 0 ) 0.5, 0.5;
+    ( 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.9987012987012988, 0.0012987012987012987;
+    ( 0, 1, 0, 0, 1 ) 0.9923076923076923, 0.007692307692307693;
+    ( 0, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.9992570579494799, 0.0007429420505200594;
+    ( 1, 0, 0, 0, 1 ) 0.7136498516320475, 0.28635014836795253;
+    ( 1, 0, 0, 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 0, 0, 1, 1 ) 0.9938271604938271, 0.006172839506172839;
+    ( 1, 0, 1, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 0, 0, 1 ) 0.015151515151515152, 0.9848484848484849;
+    ( 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( buenos_binarized | grain_binarized, grainagreement_binarized, maize_binarized, rains_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9981655845769908, 0.0018344154230092366;
+    ( 0, 0, 0, 1 ) 0.9970414201183432, 0.0029585798816568047;
+    ( 0, 0, 1, 0 ) 0.9057971014492754, 0.09420289855072464;
+    ( 0, 0, 1, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 0, 1, 0, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9723331431831147, 0.02766685681688534;
+    ( 1, 0, 0, 1 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 0, 1, 0 ) 0.7396313364055299, 0.26036866359447003;
+    ( 1, 0, 1, 1 ) 0.01020408163265306, 0.9897959183673469;
+    ( 1, 1, 0, 0 ) 0.98, 0.02;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( bureaufederation_binarized | corn_binarized ) {
+    ( 0 ) 0.9999606175173283, 3.9382482671707626e-05;
+    ( 1 ) 0.9827586206896551, 0.017241379310344827;
+
+}
+probability ( bushel_binarized | corn_binarized, soybeans_binarized, theconservation_binarized ) {
+    ( 0, 0, 0 ) 0.9999110408223781, 8.895917762182465e-05;
+    ( 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0 ) 0.916243654822335, 0.08375634517766498;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.8904, 0.1096;
+    ( 1, 0, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0 ) 0.9277456647398844, 0.07225433526011561;
+    ( 1, 1, 1 ) 0.1, 0.9;
+
+}
+probability ( bushels_binarized | corn_binarized, soviet_binarized, soybean_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9999135203328958, 8.647966710415204e-05;
+    ( 0, 0, 0, 1 ) 0.9841423948220065, 0.015857605177993526;
+    ( 0, 0, 1, 0 ) 0.9008179959100204, 0.09918200408997956;
+    ( 0, 0, 1, 1 ) 0.9931506849315068, 0.00684931506849315;
+    ( 0, 1, 0, 0 ) 0.999421965317919, 0.0005780346820809249;
+    ( 0, 1, 0, 1 ) 0.9983606557377049, 0.001639344262295082;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9674634794156707, 0.03253652058432935;
+    ( 1, 0, 0, 1 ) 0.5942760942760943, 0.4057239057239057;
+    ( 1, 0, 1, 0 ) 0.9379562043795621, 0.06204379562043796;
+    ( 1, 0, 1, 1 ) 0.7072538860103627, 0.2927461139896373;
+    ( 1, 1, 0, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 1, 0, 1 ) 0.9968944099378882, 0.003105590062111801;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.9705882352941176, 0.029411764705882353;
+
+}
+probability ( cereal_binarized | farmers_binarized, maize_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9994256463997098, 0.0005743536002901997;
+    ( 0, 0, 1 ) 0.9764649375600384, 0.023535062439961577;
+    ( 0, 1, 0 ) 0.9761904761904762, 0.023809523809523808;
+    ( 0, 1, 1 ) 0.7018348623853211, 0.2981651376146789;
+    ( 1, 0, 0 ) 0.9573804573804574, 0.04261954261954262;
+    ( 1, 0, 1 ) 0.9964539007092199, 0.0035460992907801418;
+    ( 1, 1, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 1 ) 0.9, 0.1;
+
+}
+probability ( cereals_binarized | cereal_binarized, department_binarized, tonnes_binarized ) {
+    ( 0, 0, 0 ) 0.9993937846978496, 0.000606215302150469;
+    ( 0, 0, 1 ) 0.9734895191122072, 0.02651048088779285;
+    ( 0, 1, 0 ) 0.999697519661222, 0.00030248033877797946;
+    ( 0, 1, 1 ) 0.9987012987012988, 0.0012987012987012987;
+    ( 1, 0, 0 ) 0.7926829268292683, 0.2073170731707317;
+    ( 1, 0, 1 ) 0.7807017543859649, 0.21929824561403508;
+    ( 1, 1, 0 ) 0.9, 0.1;
+    ( 1, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+
+}
+probability ( chaco_binarized | coarse_binarized, formosa_binarized, misiones_binarized ) {
+    ( 0, 0, 0 ) 0.9999902922046403, 9.707795359673818e-06;
+    ( 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1 ) 0.9, 0.1;
+    ( 1, 0, 0 ) 0.9927536231884058, 0.007246376811594203;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( coarse_binarized | farmers_binarized, grain_binarized, mlntonnes_binarized ) {
+    ( 0, 0, 0 ) 0.9999899713179694, 1.0028682030607537e-05;
+    ( 0, 0, 1 ) 0.9974619289340102, 0.0025380710659898475;
+    ( 0, 1, 0 ) 0.9600246002460024, 0.03997539975399754;
+    ( 0, 1, 1 ) 0.521505376344086, 0.478494623655914;
+    ( 1, 0, 0 ) 0.9907216494845361, 0.009278350515463918;
+    ( 1, 0, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 0 ) 0.996, 0.004;
+    ( 1, 1, 1 ) 0.9444444444444444, 0.05555555555555555;
+
+}
+probability ( cordoba_binarized | aires_binarized, villanueva_binarized ) {
+    ( 0, 0 ) 0.999980545504066, 1.945449593401035e-05;
+    ( 0, 1 ) 0.5, 0.5;
+    ( 1, 0 ) 0.9698795180722891, 0.030120481927710843;
+    ( 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( corn_binarized | syrup_binarized, tonnes_binarized, usda_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9971397982639363, 0.0028602017360637327;
+    ( 0, 0, 0, 1 ) 0.7380396732788798, 0.2619603267211202;
+    ( 0, 0, 1, 0 ) 0.747557003257329, 0.252442996742671;
+    ( 0, 0, 1, 1 ) 0.5712166172106825, 0.4287833827893175;
+    ( 0, 1, 0, 0 ) 0.9261886980333582, 0.07381130196664178;
+    ( 0, 1, 0, 1 ) 0.9328180737217598, 0.06718192627824018;
+    ( 0, 1, 1, 0 ) 0.6739130434782609, 0.32608695652173914;
+    ( 0, 1, 1, 1 ) 0.5650994575045208, 0.4349005424954792;
+    ( 1, 0, 0, 0 ) 0.02, 0.98;
+    ( 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( cornimports_binarized | corn_binarized ) {
+    ( 0 ) 0.9999606175173283, 3.9382482671707626e-05;
+    ( 1 ) 0.9827586206896551, 0.017241379310344827;
+
+}
+probability ( corrientes_binarized | formosa_binarized, misiones_binarized, moisture_binarized ) {
+    ( 0, 0, 0 ) 0.9999902854145214, 9.714585478637626e-06;
+    ( 0, 0, 1 ) 0.9952380952380953, 0.004761904761904762;
+    ( 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.038461538461538464, 0.9615384615384616;
+    ( 1, 1, 1 ) 0.9, 0.1;
+
+}
+probability ( cotton_binarized | agriculture_binarized, destinations_binarized, soybean_binarized ) {
+    ( 0, 0, 0 ) 0.9974863211451876, 0.002513678854812332;
+    ( 0, 0, 1 ) 0.9315352697095436, 0.06846473029045644;
+    ( 0, 1, 0 ) 0.9941176470588236, 0.0058823529411764705;
+    ( 0, 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+    ( 1, 0, 0 ) 0.9330446369087275, 0.06695536309127248;
+    ( 1, 0, 1 ) 0.8891891891891892, 0.11081081081081082;
+    ( 1, 1, 0 ) 0.98, 0.02;
+    ( 1, 1, 1 ) 0.029411764705882353, 0.9705882352941176;
+
+}
+probability ( crop_binarized | agriculture_binarized, tonnes_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9961836902974819, 0.00381630970251813;
+    ( 0, 0, 1 ) 0.8138461538461539, 0.18615384615384614;
+    ( 0, 1, 0 ) 0.9168030551009274, 0.08319694489907256;
+    ( 0, 1, 1 ) 0.8631961259079903, 0.1368038740920097;
+    ( 1, 0, 0 ) 0.8378212974296205, 0.16217870257037945;
+    ( 1, 0, 1 ) 0.7490842490842491, 0.2509157509157509;
+    ( 1, 1, 0 ) 0.7379603399433428, 0.26203966005665724;
+    ( 1, 1, 1 ) 0.787719298245614, 0.21228070175438596;
+
+}
+probability ( cropland_binarized | bushels_binarized, crop_binarized, grains_binarized, theconservation_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9999950515137419, 4.948486258053661e-06;
+    ( 0, 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 0, 1, 0 ) 0.9983606557377049, 0.001639344262295082;
+    ( 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0 ) 0.9996368917937546, 0.00036310820624546115;
+    ( 0, 1, 0, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 0, 1, 1, 0 ) 0.996551724137931, 0.0034482758620689655;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9976958525345622, 0.002304147465437788;
+    ( 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( crops_binarized | crop_binarized, farmers_binarized, villanueva_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9987798827472383, 0.0012201172527617178;
+    ( 0, 0, 0, 1 ) 0.9505888376856119, 0.04941116231438812;
+    ( 0, 0, 1, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0 ) 0.85177304964539, 0.14822695035460992;
+    ( 0, 1, 0, 1 ) 0.7206896551724138, 0.2793103448275862;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.8427172582619339, 0.15728274173806608;
+    ( 1, 0, 0, 1 ) 0.642433234421365, 0.35756676557863504;
+    ( 1, 0, 1, 0 ) 0.02, 0.98;
+    ( 1, 0, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0, 0 ) 0.7637362637362637, 0.23626373626373626;
+    ( 1, 1, 0, 1 ) 0.5551724137931034, 0.44482758620689655;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( delivery_binarized | department_binarized, mge_binarized, tonnes_binarized ) {
+    ( 0, 0, 0 ) 0.9936969877341043, 0.006303012265895708;
+    ( 0, 0, 1 ) 0.9499799116110887, 0.050020088388911206;
+    ( 0, 1, 0 ) 0.038461538461538464, 0.9615384615384616;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.9707302353651177, 0.029269764634882317;
+    ( 1, 0, 1 ) 0.7748091603053435, 0.22519083969465647;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( deliveryduring_binarized | corn_binarized, department_binarized ) {
+    ( 0, 0 ) 0.999979597665973, 2.040233402701269e-05;
+    ( 0, 1 ) 0.9994350282485875, 0.0005649717514124294;
+    ( 1, 0 ) 0.9981132075471698, 0.0018867924528301887;
+    ( 1, 1 ) 0.9539007092198581, 0.04609929078014184;
+
+}
+probability ( department_binarized | agriculture_binarized, usda_binarized, washington_binarized ) {
+    ( 0, 0, 0 ) 0.9838844520713704, 0.016115547928629573;
+    ( 0, 0, 1 ) 0.8829992755373098, 0.11700072446269018;
+    ( 0, 1, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 1, 1 ) 0.6322314049586777, 0.3677685950413223;
+    ( 1, 0, 0 ) 0.9380952380952381, 0.06190476190476191;
+    ( 1, 0, 1 ) 0.5712468193384224, 0.4287531806615776;
+    ( 1, 1, 0 ) 0.007246376811594203, 0.9927536231884058;
+    ( 1, 1, 1 ) 0.3029689608636977, 0.6970310391363023;
+
+}
+probability ( destinations_binarized | argentine_binarized, corn_binarized, grain_binarized, tonnes_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9994083088104389, 0.0005916911895611013;
+    ( 0, 0, 0, 1 ) 0.9866272189349112, 0.013372781065088758;
+    ( 0, 0, 1, 0 ) 0.9993288590604027, 0.0006711409395973154;
+    ( 0, 0, 1, 1 ) 0.9875183553597651, 0.012481644640234948;
+    ( 0, 1, 0, 0 ) 0.9992, 0.0008;
+    ( 0, 1, 0, 1 ) 0.7752688172043011, 0.22473118279569892;
+    ( 0, 1, 1, 0 ) 0.998220640569395, 0.0017793594306049821;
+    ( 0, 1, 1, 1 ) 0.9976958525345622, 0.002304147465437788;
+    ( 1, 0, 0, 0 ) 0.9976958525345622, 0.002304147465437788;
+    ( 1, 0, 0, 1 ) 0.25384615384615383, 0.7461538461538462;
+    ( 1, 0, 1, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 0, 1, 1 ) 0.9938271604938271, 0.006172839506172839;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.98, 0.02;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.9444444444444444, 0.05555555555555555;
+
+}
+probability ( dry_binarized | crop_binarized, rainfall_binarized ) {
+    ( 0, 0 ) 0.9983248590910883, 0.0016751409089117496;
+    ( 0, 1 ) 0.82, 0.18;
+    ( 1, 0 ) 0.8956639566395664, 0.1043360433604336;
+    ( 1, 1 ) 0.3181818181818182, 0.6818181818181818;
+
+}
+probability ( enrolled_binarized | farmers_binarized, usda_binarized ) {
+    ( 0, 0 ) 0.9999800119928043, 1.998800719568259e-05;
+    ( 0, 1 ) 0.9989247311827957, 0.001075268817204301;
+    ( 1, 0 ) 0.9979253112033195, 0.002074688796680498;
+    ( 1, 1 ) 0.8116883116883117, 0.18831168831168832;
+
+}
+probability ( enrollment_binarized | crop_binarized, enrolled_binarized, rice_binarized, signup_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9999167746914359, 8.322530856413644e-05;
+    ( 0, 0, 0, 0, 1 ) 0.9998703655690951, 0.00012963443090484831;
+    ( 0, 0, 0, 1, 0 ) 0.015151515151515152, 0.9848484848484849;
+    ( 0, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 0, 0 ) 0.999219968798752, 0.00078003120124805;
+    ( 0, 0, 1, 0, 1 ) 0.9985163204747775, 0.001483679525222552;
+    ( 0, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.9997559785261103, 0.0002440214738897023;
+    ( 1, 0, 0, 0, 1 ) 0.9993757802746567, 0.0006242197253433209;
+    ( 1, 0, 0, 1, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 0, 0, 1, 1 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 0, 1, 0, 0 ) 0.995575221238938, 0.004424778761061947;
+    ( 1, 0, 1, 0, 1 ) 0.9938271604938271, 0.006172839506172839;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 0, 0, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 0, 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( entre_binarized | rios_binarized ) {
+    ( 0 ) 0.9997285348638796, 0.0002714651361203754;
+    ( 1 ) 0.08333333333333333, 0.9166666666666666;
+
+}
+probability ( export_binarized | inspections_binarized, tonnes_binarized, washington_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9755505013956374, 0.02444949860436266;
+    ( 0, 0, 0, 1 ) 0.8301343570057581, 0.16986564299424184;
+    ( 0, 0, 1, 0 ) 0.9186605484540588, 0.08133945154594122;
+    ( 0, 0, 1, 1 ) 0.7428330522765598, 0.2571669477234401;
+    ( 0, 1, 0, 0 ) 0.813061329227611, 0.18693867077238902;
+    ( 0, 1, 0, 1 ) 0.7304921968787516, 0.2695078031212485;
+    ( 0, 1, 1, 0 ) 0.7114164904862579, 0.28858350951374206;
+    ( 0, 1, 1, 1 ) 0.5427807486631016, 0.4572192513368984;
+    ( 1, 0, 0, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 0, 1 ) 0.006172839506172839, 0.9938271604938271;
+    ( 1, 0, 1, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( exporters_binarized | export_binarized, tonnes_binarized, unknown_binarized ) {
+    ( 0, 0, 0 ) 0.9956564219111743, 0.004343578088825641;
+    ( 0, 0, 1 ) 0.9848484848484849, 0.015151515151515152;
+    ( 0, 1, 0 ) 0.9442387783433596, 0.05576122165664044;
+    ( 0, 1, 1 ) 0.09183673469387756, 0.9081632653061225;
+    ( 1, 0, 0 ) 0.8819661865998748, 0.11803381340012524;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.9024205748865356, 0.09757942511346444;
+    ( 1, 1, 1 ) 0.9615384615384616, 0.038461538461538464;
+
+}
+probability ( farmer_binarized | agriculture_binarized, oats_binarized ) {
+    ( 0, 0 ) 0.999738966306574, 0.00026103369342596685;
+    ( 0, 1 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 0 ) 0.9781582054309327, 0.021841794569067298;
+    ( 1, 1 ) 0.38235294117647056, 0.6176470588235294;
+
+}
+probability ( farmers_binarized | agriculture_binarized, corn_binarized, crop_binarized ) {
+    ( 0, 0, 0 ) 0.9966453902155515, 0.0033546097844484777;
+    ( 0, 0, 1 ) 0.7770780856423174, 0.22292191435768263;
+    ( 0, 1, 0 ) 0.8832020997375328, 0.1167979002624672;
+    ( 0, 1, 1 ) 0.6132075471698113, 0.3867924528301887;
+    ( 1, 0, 0 ) 0.8552266419981499, 0.14477335800185015;
+    ( 1, 0, 1 ) 0.775092936802974, 0.22490706319702602;
+    ( 1, 1, 0 ) 0.7935153583617748, 0.20648464163822525;
+    ( 1, 1, 1 ) 0.5235294117647059, 0.4764705882352941;
+
+}
+probability ( feed_binarized | bread_binarized, grain_binarized, tonnes_binarized ) {
+    ( 0, 0, 0 ) 0.9984114458957161, 0.0015885541042839047;
+    ( 0, 0, 1 ) 0.9627054361567636, 0.03729456384323641;
+    ( 0, 1, 0 ) 0.8881700554528651, 0.11182994454713494;
+    ( 0, 1, 1 ) 0.8795309168443497, 0.12046908315565032;
+    ( 1, 0, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 0 ) 0.9, 0.1;
+    ( 1, 1, 1 ) 0.66, 0.34;
+
+}
+probability ( feedgrains_binarized ) {
+    table 0.998139390650438, 0.0018606093495619816 ;
+}
+probability ( fordelivery_binarized | deliveryduring_binarized, ofcorn_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9995922588857729, 0.0004077411142271814;
+    ( 0, 0, 1 ) 0.9870790916209867, 0.012920908379013312;
+    ( 0, 1, 0 ) 0.9761904761904762, 0.023809523809523808;
+    ( 0, 1, 1 ) 0.1, 0.9;
+    ( 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 0, 1 ) 0.34615384615384615, 0.6538461538461539;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( formosa_binarized | misiones_binarized ) {
+    ( 0 ) 0.9999612222739258, 3.8777726074143014e-05;
+    ( 1 ) 0.1, 0.9;
+
+}
+probability ( fructose_binarized | syrup_binarized ) {
+    ( 0 ) 0.9998060963313425, 0.000193903668657411;
+    ( 1 ) 0.08333333333333333, 0.9166666666666666;
+
+}
+probability ( grain_binarized | agriculture_binarized, tonnes_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9944922510941497, 0.005507748905850265;
+    ( 0, 0, 1 ) 0.7276923076923076, 0.2723076923076923;
+    ( 0, 1, 0 ) 0.9102564102564102, 0.08974358974358974;
+    ( 0, 1, 1 ) 0.7082324455205811, 0.2917675544794189;
+    ( 1, 0, 0 ) 0.8476132190942472, 0.15238678090575275;
+    ( 1, 0, 1 ) 0.7344322344322345, 0.26556776556776557;
+    ( 1, 1, 0 ) 0.8059490084985835, 0.19405099150141644;
+    ( 1, 1, 1 ) 0.5070175438596491, 0.49298245614035086;
+
+}
+probability ( grainagreement_binarized | corn_binarized, soviet_binarized ) {
+    ( 0, 0 ) 0.9999800788876051, 1.9921112394916133e-05;
+    ( 0, 1 ) 0.9982935153583617, 0.0017064846416382253;
+    ( 1, 0 ) 0.9985507246376811, 0.0014492753623188406;
+    ( 1, 1 ) 0.860655737704918, 0.13934426229508196;
+
+}
+probability ( grains_binarized | agriculture_binarized, grain_binarized ) {
+    ( 0, 0 ) 0.9990859974814152, 0.0009140025185847178;
+    ( 0, 1 ) 0.8911671924290221, 0.10883280757097792;
+    ( 1, 0 ) 0.9478063540090772, 0.05219364599092285;
+    ( 1, 1 ) 0.8793103448275862, 0.1206896551724138;
+
+}
+probability ( grainsagreement_binarized | ofsoybeans_binarized, soviet_binarized, usda_binarized ) {
+    ( 0, 0, 0 ) 0.9999899905911557, 1.0009408844313654e-05;
+    ( 0, 0, 1 ) 0.999457111834962, 0.0005428881650380022;
+    ( 0, 1, 0 ) 0.9991023339317774, 0.0008976660682226212;
+    ( 0, 1, 1 ) 0.9379562043795621, 0.06204379562043796;
+    ( 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 0, 1 ) 0.9615384615384616, 0.038461538461538464;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( growers_binarized | agriculture_binarized, cornimports_binarized, farmers_binarized, moisture_binarized, villanueva_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9982184102660002, 0.0017815897339998079;
+    ( 0, 0, 0, 0, 1 ) 0.007692307692307693, 0.9923076923076923;
+    ( 0, 0, 0, 1, 0 ) 0.9979253112033195, 0.002074688796680498;
+    ( 0, 0, 0, 1, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 0, 1, 0, 0 ) 0.9087591240875912, 0.09124087591240876;
+    ( 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.9646204741775409, 0.03537952582245911;
+    ( 1, 0, 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 0, 0, 1, 0 ) 0.9968944099378882, 0.003105590062111801;
+    ( 1, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0, 0 ) 0.8604743083003953, 0.13952569169960474;
+    ( 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( guesses_binarized | corn_binarized, tonnes_binarized ) {
+    ( 0, 0 ) 0.9998963902358158, 0.00010360976418417672;
+    ( 0, 1 ) 0.9996041171813144, 0.000395882818685669;
+    ( 1, 0 ) 0.9361233480176211, 0.06387665198237885;
+    ( 1, 1 ) 0.9972067039106145, 0.002793296089385475;
+
+}
+probability ( harvest_binarized | crop_binarized, tonnes_binarized ) {
+    ( 0, 0 ) 0.9992334783509426, 0.0007665216490573856;
+    ( 0, 1 ) 0.9710547184773989, 0.02894528152260111;
+    ( 1, 0 ) 0.8710407239819005, 0.12895927601809956;
+    ( 1, 1 ) 0.7320441988950276, 0.26795580110497236;
+
+}
+probability ( harvested_binarized | crop_binarized, rios_binarized ) {
+    ( 0, 0 ) 0.9993502146260781, 0.000649785373921947;
+    ( 0, 1 ) 0.16666666666666666, 0.8333333333333334;
+    ( 1, 0 ) 0.9325699745547074, 0.06743002544529263;
+    ( 1, 1 ) 0.2777777777777778, 0.7222222222222222;
+
+}
+probability ( hfcs_binarized | grain_binarized ) {
+    ( 0 ) 0.9999604399082206, 3.956009177941293e-05;
+    ( 1 ) 0.9865384615384616, 0.013461538461538462;
+
+}
+probability ( inspections_binarized | grain_binarized, mlnbushels_binarized, thous_binarized ) {
+    ( 0, 0, 0 ) 0.9998317264862511, 0.00016827351374893592;
+    ( 0, 0, 1 ) 0.015151515151515152, 0.9848484848484849;
+    ( 0, 1, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.9995121951219512, 0.0004878048780487805;
+    ( 1, 0, 1 ) 0.9, 0.1;
+    ( 1, 1, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( licencesto_binarized | cereal_binarized, export_binarized, grains_binarized, season_binarized ) {
+    ( 0, 0, 0, 0 ) 0.999994869532204, 5.130467796053644e-06;
+    ( 0, 0, 0, 1 ) 0.9992657856093979, 0.0007342143906020558;
+    ( 0, 0, 1, 0 ) 0.9985163204747775, 0.001483679525222552;
+    ( 0, 0, 1, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 1, 0, 0 ) 0.9998802968637779, 0.00011970313622216902;
+    ( 0, 1, 0, 1 ) 0.9593301435406698, 0.04066985645933014;
+    ( 0, 1, 1, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 0, 1, 1, 1 ) 0.98, 0.02;
+    ( 1, 0, 0, 0 ) 0.9961240310077519, 0.003875968992248062;
+    ( 1, 0, 0, 1 ) 0.98, 0.02;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.015151515151515152, 0.9848484848484849;
+    ( 1, 1, 0, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 1, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( maize_binarized | grain_binarized, riots_binarized, tonnes_binarized, washington_binarized ) {
+    ( 0, 0, 0, 0 ) 0.999166599611463, 0.0008334003885370088;
+    ( 0, 0, 0, 1 ) 0.9982282830452056, 0.0017717169547943736;
+    ( 0, 0, 1, 0 ) 0.9407197436529455, 0.05928025634705447;
+    ( 0, 0, 1, 1 ) 0.9993065187239945, 0.0006934812760055479;
+    ( 0, 1, 0, 0 ) 0.02, 0.98;
+    ( 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9375963020030816, 0.062403697996918334;
+    ( 1, 0, 0, 1 ) 0.9807256235827665, 0.01927437641723356;
+    ( 1, 0, 1, 0 ) 0.6783060921248143, 0.32169390787518576;
+    ( 1, 0, 1, 1 ) 0.9984025559105432, 0.001597444089456869;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( maizeimporters_binarized | grain_binarized, maize_binarized, tonne_binarized, wheat_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9999949025884656, 5.0974115344228204e-06;
+    ( 0, 0, 0, 1 ) 0.9996659986639946, 0.00033400133600534405;
+    ( 0, 0, 1, 0 ) 0.9995159728944821, 0.000484027105517909;
+    ( 0, 0, 1, 1 ) 0.9963503649635036, 0.0036496350364963502;
+    ( 0, 1, 0, 0 ) 0.9975124378109452, 0.0024875621890547263;
+    ( 0, 1, 0, 1 ) 0.9912280701754386, 0.008771929824561403;
+    ( 0, 1, 1, 0 ) 0.9878048780487805, 0.012195121951219513;
+    ( 0, 1, 1, 1 ) 0.9912280701754386, 0.008771929824561403;
+    ( 1, 0, 0, 0 ) 0.9995121951219512, 0.0004878048780487805;
+    ( 1, 0, 0, 1 ) 0.9991680532445923, 0.0008319467554076539;
+    ( 1, 0, 1, 0 ) 0.9912280701754386, 0.008771929824561403;
+    ( 1, 0, 1, 1 ) 0.9961240310077519, 0.003875968992248062;
+    ( 1, 1, 0, 0 ) 0.9961240310077519, 0.003875968992248062;
+    ( 1, 1, 0, 1 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 1, 1, 0 ) 0.02, 0.98;
+    ( 1, 1, 1, 1 ) 0.9897959183673469, 0.01020408163265306;
+
+}
+probability ( meal_binarized | buenos_binarized, riots_binarized, soybean_binarized, tonnes_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9994983087314969, 0.0005016912685030981;
+    ( 0, 0, 0, 1 ) 0.9923886487502349, 0.007611351249765082;
+    ( 0, 0, 1, 0 ) 0.9498977505112475, 0.050102249488752554;
+    ( 0, 0, 1, 1 ) 0.5134680134680135, 0.48653198653198654;
+    ( 0, 1, 0, 0 ) 0.02, 0.98;
+    ( 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9976076555023924, 0.0023923444976076554;
+    ( 1, 0, 0, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 1, 0, 1, 0 ) 0.34, 0.66;
+    ( 1, 0, 1, 1 ) 0.9948453608247423, 0.005154639175257732;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( mge_binarized | hfcs_binarized ) {
+    ( 0 ) 0.9999612252811168, 3.8774718883288094e-05;
+    ( 1 ) 0.125, 0.875;
+
+}
+probability ( miscellaneous_binarized | corn_binarized, cornimports_binarized, grain_binarized ) {
+    ( 0, 0, 0 ) 0.999989999399964, 1.000060003600216e-05;
+    ( 0, 0, 1 ) 0.9993630573248408, 0.0006369426751592356;
+    ( 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.9990892531876139, 0.0009107468123861566;
+    ( 1, 0, 1 ) 0.9658634538152611, 0.03413654618473896;
+    ( 1, 1, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 1 ) 0.1, 0.9;
+
+}
+probability ( misiones_binarized | pampa_binarized ) {
+    ( 0 ) 0.9999612192662685, 3.87807337314822e-05;
+    ( 1 ) 0.25, 0.75;
+
+}
+probability ( mlnbushels_binarized | acreage_binarized, corn_binarized, guesses_binarized ) {
+    ( 0, 0, 0 ) 0.9999901328123458, 9.867187654174808e-06;
+    ( 0, 0, 1 ) 0.9, 0.1;
+    ( 0, 1, 0 ) 0.999290780141844, 0.0007092198581560284;
+    ( 0, 1, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 0, 0 ) 0.9952380952380953, 0.004761904761904762;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.9935064935064936, 0.006493506493506494;
+    ( 1, 1, 1 ) 0.9615384615384616, 0.038461538461538464;
+
+}
+probability ( mlntonnes_binarized | crop_binarized, tonnes_binarized ) {
+    ( 0, 0 ) 0.9990677439403356, 0.0009322560596643878;
+    ( 0, 1 ) 0.9409199048374306, 0.05908009516256939;
+    ( 1, 0 ) 0.997737556561086, 0.0022624434389140274;
+    ( 1, 1 ) 0.6657458563535912, 0.3342541436464088;
+
+}
+probability ( moisture_binarized | chaco_binarized, crop_binarized, soybeans_binarized, tonnes_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9996620532604061, 0.00033794673959384;
+    ( 0, 0, 0, 1 ) 0.9865652988960634, 0.01343470110393668;
+    ( 0, 0, 1, 0 ) 0.9986449864498645, 0.0013550135501355014;
+    ( 0, 0, 1, 1 ) 0.9978540772532188, 0.002145922746781116;
+    ( 0, 1, 0, 0 ) 0.8595505617977528, 0.1404494382022472;
+    ( 0, 1, 0, 1 ) 0.9992295839753467, 0.0007704160246533128;
+    ( 0, 1, 1, 0 ) 0.9938271604938271, 0.006172839506172839;
+    ( 0, 1, 1, 1 ) 0.9912280701754386, 0.008771929824561403;
+    ( 1, 0, 0, 0 ) 0.5, 0.5;
+    ( 1, 0, 0, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+
+}
+probability ( oats_binarized ) {
+    table 0.9980618652608729, 0.001938134739127064 ;
+}
+probability ( ofcorn_binarized | corn_binarized ) {
+    ( 0 ) 0.9999606175173283, 3.9382482671707626e-05;
+    ( 1 ) 0.9679802955665024, 0.03201970443349754;
+
+}
+probability ( ofmaize_binarized | maize_binarized ) {
+    ( 0 ) 0.9999610014819437, 3.899851805631386e-05;
+    ( 1 ) 0.9551282051282052, 0.04487179487179487;
+
+}
+probability ( ofsoybeans_binarized | corn_binarized, usda_binarized ) {
+    ( 0, 0 ) 0.9999800279608548, 1.9972039145196725e-05;
+    ( 0, 1 ) 0.9985994397759104, 0.0014005602240896359;
+    ( 1, 0 ) 0.997737556561086, 0.0022624434389140274;
+    ( 1, 1 ) 0.9324324324324325, 0.06756756756756757;
+
+}
+probability ( pampa_binarized | rios_binarized ) {
+    ( 0 ) 0.9999612192662685, 3.87807337314822e-05;
+    ( 1 ) 0.08333333333333333, 0.9166666666666666;
+
+}
+probability ( pik_binarized | bargefreight_binarized, bushel_binarized, oats_binarized, usda_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9998362591670057, 0.00016374083299427404;
+    ( 0, 0, 0, 1 ) 0.9836272040302267, 0.0163727959697733;
+    ( 0, 0, 1, 0 ) 0.9961240310077519, 0.003875968992248062;
+    ( 0, 0, 1, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 0, 1, 0, 0 ) 0.995575221238938, 0.004424778761061947;
+    ( 0, 1, 0, 1 ) 0.6649484536082474, 0.33505154639175255;
+    ( 0, 1, 1, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 0, 1, 1, 1 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 0, 0 ) 0.5, 0.5;
+    ( 1, 0, 0, 1 ) 0.02, 0.98;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( planted_binarized | acres_binarized, crop_binarized, crops_binarized ) {
+    ( 0, 0, 0 ) 0.9994349834460062, 0.0005650165539937749;
+    ( 0, 0, 1 ) 0.8703703703703703, 0.12962962962962962;
+    ( 0, 1, 0 ) 0.9349376114081996, 0.06506238859180036;
+    ( 0, 1, 1 ) 0.8937823834196891, 0.10621761658031088;
+    ( 1, 0, 0 ) 0.7732919254658385, 0.2267080745341615;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.5540540540540541, 0.44594594594594594;
+    ( 1, 1, 1 ) 0.9615384615384616, 0.038461538461538464;
+
+}
+probability ( postedcounty_binarized | corn_binarized, grain_binarized ) {
+    ( 0, 0 ) 0.999979999199968, 2.000080003200128e-05;
+    ( 0, 1 ) 0.9987277353689568, 0.001272264631043257;
+    ( 1, 0 ) 0.9982078853046595, 0.0017921146953405018;
+    ( 1, 1 ) 0.9330708661417323, 0.06692913385826772;
+
+}
+probability ( rainfall_binarized | cordoba_binarized, crop_binarized, rains_binarized ) {
+    ( 0, 0, 0 ) 0.9992807173120505, 0.0007192826879495517;
+    ( 0, 0, 1 ) 0.9848484848484849, 0.015151515151515152;
+    ( 0, 1, 0 ) 0.9656381486676017, 0.034361851332398316;
+    ( 0, 1, 1 ) 0.6095890410958904, 0.3904109589041096;
+    ( 1, 0, 0 ) 0.1, 0.9;
+    ( 1, 0, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.2647058823529412, 0.7352941176470589;
+
+}
+probability ( rains_binarized | coarse_binarized, crop_binarized, harvest_binarized, sorghum_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9997575625637016, 0.00024243743629832667;
+    ( 0, 0, 0, 1 ) 0.9979919678714859, 0.002008032128514056;
+    ( 0, 0, 1, 0 ) 0.8316062176165803, 0.16839378238341968;
+    ( 0, 0, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 0, 1, 0, 0 ) 0.9185654008438818, 0.08143459915611814;
+    ( 0, 1, 0, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 0, 1, 1, 0 ) 0.8223443223443223, 0.17765567765567766;
+    ( 0, 1, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 0, 0, 0 ) 0.9897959183673469, 0.01020408163265306;
+    ( 1, 0, 0, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 0, 1, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 0, 1, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.02, 0.98;
+
+}
+probability ( ranged_binarized | acres_binarized, maize_binarized, mlnbushels_binarized ) {
+    ( 0, 0, 0 ) 0.9984234542997591, 0.0015765457002408884;
+    ( 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 0 ) 0.9327868852459016, 0.06721311475409836;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.9195121951219513, 0.08048780487804878;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.9, 0.1;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( rice_binarized | agriculture_binarized, ascs_binarized, crops_binarized ) {
+    ( 0, 0, 0 ) 0.9979757900461238, 0.002024209953876211;
+    ( 0, 0, 1 ) 0.8147208121827412, 0.18527918781725888;
+    ( 0, 1, 0 ) 0.5952380952380952, 0.40476190476190477;
+    ( 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0 ) 0.925249169435216, 0.07475083056478406;
+    ( 1, 0, 1 ) 0.7944162436548223, 0.20558375634517767;
+    ( 1, 1, 0 ) 0.98, 0.02;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( rios_binarized | belt_binarized, villanueva_binarized ) {
+    ( 0, 0 ) 0.9999805832783193, 1.941672168071143e-05;
+    ( 0, 1 ) 0.045454545454545456, 0.9545454545454546;
+    ( 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1 ) 0.8333333333333334, 0.16666666666666666;
+
+}
+probability ( riots_binarized ) {
+    table 0.9996898984417397, 0.00031010155826033023 ;
+}
+probability ( saidprivate_binarized | exporters_binarized, unknown_binarized, usda_binarized ) {
+    ( 0, 0, 0 ) 0.9999899921939113, 1.0007806088749225e-05;
+    ( 0, 0, 1 ) 0.9994797086368367, 0.0005202913631633715;
+    ( 0, 1, 0 ) 0.9864864864864865, 0.013513513513513514;
+    ( 0, 1, 1 ) 0.9615384615384616, 0.038461538461538464;
+    ( 1, 0, 0 ) 0.9989690721649485, 0.0010309278350515464;
+    ( 1, 0, 1 ) 0.9086021505376344, 0.0913978494623656;
+    ( 1, 1, 0 ) 0.9827586206896551, 0.017241379310344827;
+    ( 1, 1, 1 ) 0.029411764705882353, 0.9705882352941176;
+
+}
+probability ( season_binarized | agriculture_binarized, bargefreight_binarized, crop_binarized, tonnes_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9977993561665524, 0.0022006438334476754;
+    ( 0, 0, 0, 1 ) 0.9527375398968819, 0.0472624601031181;
+    ( 0, 0, 1, 0 ) 0.8659043659043659, 0.1340956340956341;
+    ( 0, 0, 1, 1 ) 0.6726618705035972, 0.3273381294964029;
+    ( 0, 1, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9590163934426229, 0.040983606557377046;
+    ( 1, 0, 0, 1 ) 0.8343653250773994, 0.16563467492260062;
+    ( 1, 0, 1, 0 ) 0.8790523690773068, 0.12094763092269327;
+    ( 1, 0, 1, 1 ) 0.7622950819672131, 0.23770491803278687;
+    ( 1, 1, 0, 0 ) 0.9444444444444444, 0.05555555555555555;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( signup_binarized | corn_binarized, crop_binarized, farmers_binarized ) {
+    ( 0, 0, 0 ) 0.9999899592344921, 1.0040765507962328e-05;
+    ( 0, 0, 1 ) 0.9984423676012462, 0.001557632398753894;
+    ( 0, 1, 0 ) 0.9835589941972921, 0.01644100580270793;
+    ( 0, 1, 1 ) 0.9966442953020134, 0.003355704697986577;
+    ( 1, 0, 0 ) 0.9991212653778558, 0.0008787346221441124;
+    ( 1, 0, 1 ) 0.8809523809523809, 0.11904761904761904;
+    ( 1, 1, 0 ) 0.9935064935064936, 0.006493506493506494;
+    ( 1, 1, 1 ) 0.6639344262295082, 0.3360655737704918;
+
+}
+probability ( sorghum_binarized | barley_binarized, corn_binarized, delivery_binarized, maize_binarized, signup_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9995966630758825, 0.0004033369241175439;
+    ( 0, 0, 0, 0, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 0, 0, 1, 0 ) 0.6978798586572438, 0.30212014134275617;
+    ( 0, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 0, 0 ) 0.9997160704145373, 0.00028392958546280523;
+    ( 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0 ) 0.9897959183673469, 0.01020408163265306;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.9243614931237721, 0.0756385068762279;
+    ( 0, 1, 0, 0, 1 ) 0.9948453608247423, 0.005154639175257732;
+    ( 0, 1, 0, 1, 0 ) 0.9897959183673469, 0.01020408163265306;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.9985163204747775, 0.001483679525222552;
+    ( 0, 1, 1, 0, 1 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.998960498960499, 0.0010395010395010396;
+    ( 1, 0, 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 0, 0, 1, 0 ) 0.9982698961937716, 0.0017301038062283738;
+    ( 1, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0, 0 ) 0.9938271604938271, 0.006172839506172839;
+    ( 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.0034482758620689655, 0.996551724137931;
+    ( 1, 1, 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( soviet_binarized | grain_binarized, tonnes_binarized, wheat_binarized ) {
+    ( 0, 0, 0 ) 0.9942906828133838, 0.005709317186616103;
+    ( 0, 0, 1 ) 0.8524027459954233, 0.14759725400457666;
+    ( 0, 1, 0 ) 0.938300051203277, 0.06169994879672299;
+    ( 0, 1, 1 ) 0.9347826086956522, 0.06521739130434782;
+    ( 1, 0, 0 ) 0.9467532467532468, 0.053246753246753244;
+    ( 1, 0, 1 ) 0.7981366459627329, 0.20186335403726707;
+    ( 1, 1, 0 ) 0.7746781115879828, 0.22532188841201717;
+    ( 1, 1, 1 ) 0.553639846743295, 0.446360153256705;
+
+}
+probability ( soybean_binarized | agriculture_binarized, argentine_binarized, corn_binarized, dry_binarized, harvest_binarized, mlnbushels_binarized ) {
+    ( 0, 0, 0, 0, 0, 0 ) 0.9981214849578514, 0.0018785150421486232;
+    ( 0, 0, 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 0, 0, 1, 0 ) 0.8272335844994618, 0.1727664155005382;
+    ( 0, 0, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 0, 1, 0, 0 ) 0.9993997599039616, 0.0006002400960384153;
+    ( 0, 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 0, 1, 1, 0 ) 0.9948453608247423, 0.005154639175257732;
+    ( 0, 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 0, 0, 0 ) 0.8644646924829157, 0.13553530751708429;
+    ( 0, 0, 1, 0, 0, 1 ) 0.003875968992248062, 0.9961240310077519;
+    ( 0, 0, 1, 0, 1, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 0, 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0, 0 ) 0.005154639175257732, 0.9948453608247423;
+    ( 0, 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 0, 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0, 0 ) 0.7617100371747212, 0.2382899628252788;
+    ( 0, 1, 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 1, 0 ) 0.007692307692307693, 0.9923076923076923;
+    ( 0, 1, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 0, 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 1, 0 ) 0.005154639175257732, 0.9948453608247423;
+    ( 0, 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0, 0 ) 0.9923076923076923, 0.007692307692307693;
+    ( 0, 1, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0, 0 ) 0.921525579495558, 0.07847442050444195;
+    ( 1, 0, 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 1, 0 ) 0.9990825688073395, 0.0009174311926605505;
+    ( 1, 0, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 1, 0, 0 ) 0.9974093264248705, 0.0025906735751295338;
+    ( 1, 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 1, 1, 0 ) 0.9948453608247423, 0.005154639175257732;
+    ( 1, 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0, 0, 0 ) 0.738006693938267, 0.261993306061733;
+    ( 1, 0, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0, 1, 0 ) 0.6649484536082474, 0.33505154639175255;
+    ( 1, 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 0, 0 ) 0.9968944099378882, 0.003105590062111801;
+    ( 1, 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0, 0 ) 0.33505154639175255, 0.6649484536082474;
+    ( 1, 1, 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 1, 0 ) 0.015151515151515152, 0.9848484848484849;
+    ( 1, 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 1, 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( soybeans_binarized | corn_binarized, farmer_binarized, feedgrains_binarized, soybean_binarized, thous_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9984905492021474, 0.0015094507978525647;
+    ( 0, 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 0, 1, 0 ) 0.6665158371040724, 0.3334841628959276;
+    ( 0, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 0, 0 ) 0.582901554404145, 0.4170984455958549;
+    ( 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.7461538461538462, 0.25384615384615383;
+    ( 0, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.8961129106894956, 0.1038870893105044;
+    ( 1, 0, 0, 0, 1 ) 0.003875968992248062, 0.9961240310077519;
+    ( 1, 0, 0, 1, 0 ) 0.5365296803652968, 0.4634703196347032;
+    ( 1, 0, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0, 0 ) 0.995575221238938, 0.004424778761061947;
+    ( 1, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.995575221238938, 0.004424778761061947;
+    ( 1, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.015151515151515152, 0.9848484848484849;
+    ( 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.029411764705882353, 0.9705882352941176;
+
+}
+probability ( sunflower_binarized | agpm_binarized, farmers_binarized, soybean_binarized, villanueva_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9997578501042728, 0.0002421498957272898;
+    ( 0, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 0 ) 0.9398216939078752, 0.060178306092124816;
+    ( 0, 0, 1, 1 ) 0.01020408163265306, 0.9897959183673469;
+    ( 0, 1, 0, 0 ) 0.9995340167753961, 0.00046598322460391424;
+    ( 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0 ) 0.9972972972972973, 0.002702702702702703;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9705882352941176, 0.029411764705882353;
+    ( 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( syrup_binarized | crop_binarized, mge_binarized ) {
+    ( 0, 0 ) 0.9999803064319194, 1.9693568080664855e-05;
+    ( 0, 1 ) 0.07142857142857142, 0.9285714285714286;
+    ( 1, 0 ) 0.9887780548628429, 0.011221945137157107;
+    ( 1, 1 ) 0.5, 0.5;
+
+}
+probability ( theconservation_binarized | enrolled_binarized, harvest_binarized, soybean_binarized ) {
+    ( 0, 0, 0 ) 0.999990179325516, 9.820674483923556e-06;
+    ( 0, 0, 1 ) 0.9987277353689568, 0.001272264631043257;
+    ( 0, 1, 0 ) 0.9976076555023924, 0.0023923444976076554;
+    ( 0, 1, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 1, 0, 0 ) 0.038461538461538464, 0.9615384615384616;
+    ( 1, 0, 1 ) 0.9615384615384616, 0.038461538461538464;
+    ( 1, 1, 0 ) 0.9, 0.1;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( thecrops_binarized | chaco_binarized, mlntonnes_binarized ) {
+    ( 0, 0 ) 0.9999804969380193, 1.9503061980730975e-05;
+    ( 0, 1 ) 0.9836601307189542, 0.016339869281045753;
+    ( 1, 0 ) 0.8333333333333334, 0.16666666666666666;
+    ( 1, 1 ) 0.1, 0.9;
+
+}
+probability ( thous_binarized | bushels_binarized, wheat_binarized ) {
+    ( 0, 0 ) 0.9999801010864807, 1.9898913519321845e-05;
+    ( 0, 1 ) 0.9991624790619765, 0.0008375209380234506;
+    ( 1, 0 ) 0.9782608695652174, 0.021739130434782608;
+    ( 1, 1 ) 0.6372549019607843, 0.3627450980392157;
+
+}
+probability ( tonne_binarized ) {
+    table 0.9851926505930693, 0.01480734940693077 ;
+}
+probability ( tonnes_binarized | tonne_binarized ) {
+    ( 0 ) 0.9530610638967579, 0.046938936103242054;
+    ( 1 ) 0.3481675392670157, 0.6518324607329843;
+
+}
+probability ( tonnesof_binarized | harvest_binarized, maize_binarized, ofsoybeans_binarized, tonnes_binarized ) {
+    ( 0, 0, 0, 0 ) 0.9993354968320198, 0.0006645031679802195;
+    ( 0, 0, 0, 1 ) 0.9792370355652692, 0.020762964434730777;
+    ( 0, 0, 1, 0 ) 0.98, 0.02;
+    ( 0, 0, 1, 1 ) 0.02, 0.98;
+    ( 0, 1, 0, 0 ) 0.996551724137931, 0.0034482758620689655;
+    ( 0, 1, 0, 1 ) 0.8685636856368564, 0.13143631436314362;
+    ( 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0 ) 0.9970414201183432, 0.0029585798816568047;
+    ( 1, 0, 0, 1 ) 0.9337349397590361, 0.06626506024096386;
+    ( 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 0, 1 ) 0.9943820224719101, 0.0056179775280898875;
+    ( 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( unknown_binarized | corn_binarized, destinations_binarized ) {
+    ( 0, 0 ) 0.9992701881731034, 0.0007298118268965245;
+    ( 0, 1 ) 0.9883720930232558, 0.011627906976744186;
+    ( 1, 0 ) 0.9828496042216359, 0.017150395778364115;
+    ( 1, 1 ) 0.16666666666666666, 0.8333333333333334;
+
+}
+probability ( usda_binarized | tonnes_binarized, wheat_binarized ) {
+    ( 0, 0 ) 0.9903354532984162, 0.009664546701583739;
+    ( 0, 1 ) 0.717391304347826, 0.2826086956521739;
+    ( 1, 0 ) 0.9208600182982617, 0.07913998170173833;
+    ( 1, 1 ) 0.6031518624641834, 0.3968481375358166;
+
+}
+probability ( ussr_binarized | corn_binarized, soviet_binarized, tonnes_binarized ) {
+    ( 0, 0, 0 ) 0.999906024851206, 9.397514879398559e-05;
+    ( 0, 0, 1 ) 0.9876783398184177, 0.01232166018158236;
+    ( 0, 1, 0 ) 0.8270777479892761, 0.17292225201072386;
+    ( 0, 1, 1 ) 0.7910798122065728, 0.20892018779342722;
+    ( 1, 0, 0 ) 0.9988558352402745, 0.0011441647597254005;
+    ( 1, 0, 1 ) 0.7924901185770751, 0.2075098814229249;
+    ( 1, 1, 0 ) 0.7352941176470589, 0.2647058823529412;
+    ( 1, 1, 1 ) 0.2714285714285714, 0.7285714285714285;
+
+}
+probability ( villanueva_binarized | aires_binarized, rains_binarized ) {
+    ( 0, 0 ) 0.9999805060626146, 1.9493937385473118e-05;
+    ( 0, 1 ) 0.9905660377358491, 0.009433962264150943;
+    ( 1, 0 ) 0.9939759036144579, 0.006024096385542169;
+    ( 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+
+}
+probability ( washington_binarized | agriculture_binarized, cornimports_binarized, feedgrains_binarized, guesses_binarized, usda_binarized ) {
+    ( 0, 0, 0, 0, 0 ) 0.9169470492985811, 0.08305295070141898;
+    ( 0, 0, 0, 0, 1 ) 0.5384245917387128, 0.46157540826128723;
+    ( 0, 0, 0, 1, 0 ) 0.9848484848484849, 0.015151515151515152;
+    ( 0, 0, 0, 1, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 0, 0, 1, 0, 0 ) 0.007692307692307693, 0.9923076923076923;
+    ( 0, 0, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 0, 0 ) 0.015151515151515152, 0.9848484848484849;
+    ( 0, 1, 0, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 0, 1, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 0, 0, 0, 0 ) 0.5981455064194009, 0.40185449358059916;
+    ( 1, 0, 0, 0, 1 ) 0.07421487603305785, 0.9257851239669421;
+    ( 1, 0, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 0, 1, 1 ) 0.9897959183673469, 0.01020408163265306;
+    ( 1, 0, 1, 0, 0 ) 0.003105590062111801, 0.9968944099378882;
+    ( 1, 0, 1, 0, 1 ) 0.0034482758620689655, 0.996551724137931;
+    ( 1, 0, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 0, 1, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 0, 1 ) 0.029411764705882353, 0.9705882352941176;
+    ( 1, 1, 0, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 0, 1, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1, 1, 1 ) 0.5, 0.5;
+
+}
+probability ( wheat_binarized | feedgrains_binarized, oats_binarized, tonnes_binarized ) {
+    ( 0, 0, 0 ) 0.990018747038586, 0.009981252961414062;
+    ( 0, 0, 1 ) 0.762478184991274, 0.23752181500872602;
+    ( 0, 1, 0 ) 0.4550561797752809, 0.5449438202247191;
+    ( 0, 1, 1 ) 0.1, 0.9;
+    ( 1, 0, 0 ) 0.2037037037037037, 0.7962962962962963;
+    ( 1, 0, 1 ) 0.05555555555555555, 0.9444444444444444;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.1, 0.9;
+
+}
+probability ( yellow_binarized | ascs_binarized, exporters_binarized, moisture_binarized ) {
+    ( 0, 0, 0 ) 0.9996753821637254, 0.0003246178362745677;
+    ( 0, 0, 1 ) 0.9123711340206185, 0.08762886597938144;
+    ( 0, 1, 0 ) 0.9991789819376026, 0.0008210180623973727;
+    ( 0, 1, 1 ) 0.038461538461538464, 0.9615384615384616;
+    ( 1, 0, 0 ) 0.8111111111111111, 0.18888888888888888;
+    ( 1, 0, 1 ) 0.5, 0.5;
+    ( 1, 1, 0 ) 0.5, 0.5;
+    ( 1, 1, 1 ) 0.5, 0.5;
+
+}

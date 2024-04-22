@@ -1,0 +1,15 @@
+cmc-nominal.arff
+chess_krkopt_zerovsall.arff
+census-income-full-nominal.arff
+bank-additional-ful-nominal.arff
+apascal_entire_trainvsall.arff
+celeba_baldvsnonbald.arff
+kddcup99-corrected-probevsnormal-nominal-cleaned.arff
+kddcup99-corrected-u2rvsnormal-nominal-cleaned.arff
+Reuters-corn-100.arff
+covertype_nominal_4vs123567.arff
+solar-flare_FvsAll-cleaned.arff
+w7a-libsvm-nonsparse.arff
+ad_nominal.arff
+AID362red_train_allpossiblenominal.arff
+

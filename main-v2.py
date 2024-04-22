@@ -3,15 +3,40 @@
 import sklearn.datasets
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
 import numpy as np
 import math
 from pgmpy.readwrite import BIFReader
 from pgmpy.sampling.Sampling import BayesianModelSampling
-from pgmpy.estimators import BayesianEstimator,BDeuScore
+from pgmpy.estimators import BayesianEstimator,BDeuScore, HillClimbSearch
+from pgmpy.estimators import TreeSearch
+from pgmpy.factors.discrete import TabularCPD
+from pgmpy.models import BayesianNetwork
 import pandas as pd
 import time
 import random as rd
 import networkx as nx
+from functools import reduce
+from operator import mul
+from itertools import chain
+from scipy.io import arff
+from pandas.api.types import CategoricalDtype
+
+from generalizedlr import *
+ 
+# Computes de size of a conditional probability distribution stored as a table (pgmpy)
+
+def tsize(t):
+  return reduce(mul,t.cardinality[1:])*(t.cardinality[0]-1)
+  
+def evaluate(network,df):
+   df.drop('_weight', axis = 'columns',inplace=True)
+   list = df.to_dict(orient='records')
+   values = []
+   
+   for x in list:
+      values.append(network.get_state_probability(x))
+   return values
 
 def e_stepn(weights, pc,w):
   probs = weights*w
@@ -27,8 +52,7 @@ def e_stepn(weights, pc,w):
   return probs, loglike
 
 
-def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
-  # get target column
+def m_stepn(dataset,net,probs,pc,w, weightsvar, s=2, version='ta', models = dict()):
   
 
   counts = probs.sum(axis=0)
@@ -43,6 +67,8 @@ def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
 
   nc = dataset.shape[0]
   weights = np.ones((nc,len(pc)))
+  t = np.ones((nc,len(pc)))
+
   
   
   lwt = dict()
@@ -51,13 +77,14 @@ def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
   # learn logistic regression model
   bayest = BayesianEstimator(model=net, data=dataset, state_names=net.states)
 
-  dataset['_weight'] = w1
   
 
-  # learn logistic regression model
   for v in net.nodes():
+    dataset['_weight'] = 1- weightsvar[v]
+
     if version=='ta':
-      table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2,weighted=True)
+      par = net.get_parents(v)
+      table = tfit(dataset,par,  v, net.states,s=2,weighted = True)
       models[v] = table
       lwt =getprobs(table,dataset)
     elif version=='tr':
@@ -67,6 +94,23 @@ def m_stepn(dataset,net,probs,pc,  s=2, version='ta', models = dict()):
 
     for i in range(len(pc)):
        weights[:,i] = weights[:,i] *( pc[i] * lws + (1-pc[i]) * lwt) 
+    weightsvar[v] = lws/lwt
+
+    for v in net.nodes():
+      for i in range(len(pc)):
+           t[:,i] = weights[:,i] /(pc[i] *weightsvar[v] + (1-pc[i]) )
+      probsv = t*w
+      den = probsv.sum(axis=1)
+      size = den.shape[0]
+      den = den.reshape((size,1))
+      probsv = probsv/den
+
+      expect = probsv*pc
+
+
+      weightsvar[v] = (weightsvar[v] * probsv)/(weightsvar[v] * probsv + 1-probsv)
+
+
   
   return weights,models,counts,w2
 
@@ -143,25 +187,34 @@ def categorn(net,models, pc,w, dataset, realc, version='ta'):
   
   return 1
 
+# pc probability of being anomalie a node
+# wc intial probabilities for pc
 
 def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, version='ta'):
   # initialy all the instances have the same weight
   nc = dataset.shape[0]
-  weights = np.ones((nc,len(pc)))
+
+  
+  apc = np.array(pc)
+
   
   
   models = dict()
   lwt = dict()
   lws = dict()
 
-  # learn logistic regression model
+  weightsvar = dict()
+
   w = np.ones(nc)
   bayest = BayesianEstimator(model=net, data=dataset, state_names=net.states)
 
-  dataset['_weight'] = w
+  # A first estimation of models and associated probabilities 
+
   for v in net.nodes():
+    par = net.get_parents(v)
     if version == 'ta':
-      table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+      table = tfit(dataset,par,  v, net.states,s=2,weighted=False)
+
       models[v] = table
       lwt[v] = getprobs(table,dataset)
     elif version=="tr":
@@ -173,38 +226,79 @@ def em_algorithmn(net, dataset,  pc,wc, s=2, epsilon=0.1, iterations = 30, versi
 
     lws[v] = np.full(nc,1/len(net.states[v]))
 
-    for i in range(len(pc)):
-       weights[:,i] = weights[:,i] *( pc[i] * lws[v] + (1-pc[i]) * lwt[v]) 
-  
-  probs = weights*wc
-  den = probs.sum(axis=1)
-  size = den.shape[0]
-  den = den.reshape((size,1))
-  probs = probs/den
-  np.nan_to_num(probs, nan=1/len(pc),copy=False)
   loglike_best = float('-inf')
-  counts = probs.sum(axis=0)
-  counts = counts + s
-  counts = counts/counts.sum()
+
+  logop = lambda t: math.log(max(t,0.0000000001))
+
+  priors = list(wc)
+
+
+  
 
   for i in range(1, iterations+1):
-    probs, loglike = e_stepn(weights,pc,counts)
-    if loglike > loglike_best+epsilon or i ==1:
-      loglike_best = loglike
-      print("Improvement: " , loglike_best)
-    
+    # Expectation step: compute new weights and likelihood
+    weights =  np.ones((nc,len(pc)))
+    wt = np.ones((nc,len(pc)))
+
+
+    for v in net.nodes:
+      for i in range(len(pc)):
+        weights[:,i] = weights[:,i] *( pc[i] * lws[v] + (1-pc[i]) * lwt[v]) 
+    probs = weights*priors # multiply by prior probabilities
+    den = probs.sum(axis=1)
+    size = den.shape[0]
+    den = den.reshape((size,1))
+    loglike = sum(np.array([logop(xi) for xi in den])) # new loglike
+
+    if loglike <= loglike_best + epsilon:
+       print("No improvement " , loglike)
+       break
     else:
-      break
+       loglike_best = loglike
+       print("Improvement ", loglike)
 
-    # perform maximization step
-    weights,models, counts, w2 = m_stepn(dataset,net,probs, pc, s, version=version, models=models)
+    # Compute weights for conditional probability tables
+
+    for v in net.nodes:
+      for i in range(len(pc)):
+        wt[:,i] = weights[:,i]  /( pc[i] * lws[v] + (1-pc[i]) * lwt[v])
+      wt = wt*priors
+
+      wy = wt*apc
+      wy = wy.sum(axis=1)
+      wn = wt*(1-apc)
+      wn = wn.sum(axis=1)
+      wy = wy * lws[v]
+      wn = wn * lwt[v]
+      weightsvar[v] = wy/(wn+wy)
+
+  # Reestimate priors and conditional probability tables
+
+    priors = (probs/den).sum(axis=0)
+    priors = priors + s/len(priors)
+    priors = priors/priors.sum()
+
     
-   
+
+    for v in net.nodes():
+        dataset['_weight'] = 1- weightsvar[v]
+
+        if version=='ta':
+          par = net.get_parents(v)
+          table = tfit(dataset,par,  v, net.states,s=2,weighted = True)
+          models[v] = table
+          lwt[v] =getprobs(table,dataset)
+        elif version=='tr':
+          models[v].updatew(dataset,  v, net.states, s=2)
+          lwt[v] = getprobst(models[v],dataset)
+
+
+  values = probs/den
+  expected = values[:,1:].sum(axis=1)
+
+  return models, expected 
+     
     
-
-  return models, counts, w2
-
-
 
 
 
@@ -327,17 +421,72 @@ def testindep(data,var,target,names,s):
   return score-basicsco
 
 
-  
+def tfit(dataset,parents,node, names,s=2, weighted=False):
+  node_cardinality = len(names[node])
+  parents_cardinalities = [len(names[parent]) for parent in parents]
+  cpd_shape = (node_cardinality, np.prod(parents_cardinalities, dtype=int))
 
+  alpha = float(s) / (node_cardinality * np.prod(parents_cardinalities))
+  pseudo_counts = np.ones(cpd_shape, dtype=float) * alpha
+  if weighted and ("_weight" not in dataset.columns):
+            raise ValueError("data must contain a `_weight` column if weighted=True")
+  if not parents:
+            # count how often each state of 'variable' occurred
+            if weighted:
+                state_count_data = dataset.groupby([node])["_weight"].sum()
+            else:
+                state_count_data = dataset.loc[:, node].value_counts()
+
+            state_counts = (
+                state_count_data.reindex(names[node])
+                .fillna(0)
+                .to_frame()
+            )
+  else:
+    parents_states = [names[parent] for parent in parents]
+    if weighted:
+                state_count_data = (
+                    dataset.groupby([node] + parents)["_weight"]
+                    .sum()
+                    .unstack(parents)
+                )
+
+    else:
+                state_count_data = (
+                    dataset.groupby([node] + parents, observed=True)
+                    .size()
+                    .unstack(parents)
+                )
+
+    if not isinstance(state_count_data.columns, pd.MultiIndex):
+                state_count_data.columns = pd.MultiIndex.from_arrays([state_count_data.columns])
+    row_index = names[node]
+    column_index = pd.MultiIndex.from_product(parents_states, names=parents)
+    state_counts = state_count_data.reindex(
+                    index=row_index, columns=column_index
+                ).fillna(0)
+  
+  bayesian_counts = state_counts + pseudo_counts
+
+  cpd = TabularCPD(
+            node,
+            node_cardinality,
+            np.array(bayesian_counts),
+            evidence=parents,
+            evidence_card=parents_cardinalities,
+            state_names={var: names[var] for var in chain([node], parents)},
+        )
+  cpd.normalize()
+  return cpd
 
 class probabilitytree:
 
   def __init__(self):
-    node = None
-    frequencies = dict()
-    chidren = None
-    model = None
-    leaf = True
+    self.node = None
+    self.frequencies = dict()
+    self.chidren = None
+    self.model = None
+    self.leaf = True
 
 
 
@@ -423,7 +572,7 @@ class probabilitytree:
     if not self.leaf:
       for x in self.children.keys():
         datax = data.loc[data[self.node] == x]
-        self.children[x].updatew(datax,v,states,s)
+        self.children[x].updatew(datax,v,states,s/len(self.children.keys()))
     else:
         self.frequencies = data.groupby(v)['_weight'].sum().to_dict()
         
@@ -480,6 +629,10 @@ class probabilitytree:
       total += s
       t = self.frequencies[values[v]]+s/len(self.frequencies)
       return t/total
+    
+  
+     
+     
   
   def valuate(self,data):
     s = data.shape[0]
@@ -889,6 +1042,67 @@ def convert(data,names):
 
   return result
 
+def experiment7(input,output):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizes = list(map(int, line.split()))
+
+  lines = filei.readlines()
+  for line in lines:
+      line = line.strip()
+      reader = BIFReader("./Networks/"+line)
+      print(line)
+      network = reader.get_model()
+      
+        
+      sampler = BayesianModelSampling(network)
+      datatest = sampler.forward_sample(size=10000)
+      # datatestn = convert(datatest,network.states)
+      
+
+      for x in sizes:
+        database = sampler.forward_sample(size=x)
+        transformcat(database, network.states)
+        transformcat(datatest, network.states)
+
+
+
+
+        for v in network.nodes():
+          par = network.get_parents(v) 
+          values = len(pd.unique(database[v]))
+
+          
+          if len(par)>2 and values>1:
+             print(v,par) 
+             logr = generalizedlr(v,par,database)
+             logr.fit()
+             logli1 = logr.scorell(datatest)
+             bic1 = logr.akaike(logr.model)
+             logr.simplify()
+             logli2 = logr.scorell(datatest)
+             table = tfit(database,par,  v, network.states,s=2,weighted=False)
+             bic2 = logr.akaike(logr.model)
+
+             logli0 = valuate(table,datatest)
+             logli0s = valuate(table,database)
+
+             size0 = 1
+             for v2 in par:
+                size0 *= network.get_cardinality(v2)
+             size0 *= (network.get_cardinality(v)-1)
+             bic0 = logli0s*database.shape[0] - size0
+
+             print(logli0,logli1,logli2, bic0,bic1,bic2)
+             time.sleep(5)
+
+
+
+          
+
+
+
 def experiment(input, output):
   filei = open(input,'r')
   fileo = open(output,"w")
@@ -945,7 +1159,6 @@ def experiment(input, output):
 
       for v in network.nodes():
         par = network.get_parents(v) 
-        size0 = 1.0
         size1= 0.0
         for v2 in par:
             size0 *= network.get_cardinality(v2)
@@ -956,7 +1169,8 @@ def experiment(input, output):
         if len(par)>1:
           bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
 
-          table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+          table = tfit(database,par,  v, network.states,s=2,weighted=False)
+
           logli0 = valuate(table,datatest)
 
           # features = databasen[par]
@@ -1066,6 +1280,13 @@ def experiment(input, output):
 def transform(x):
   return {i: x[i] for i in x.index}
 
+def transformcat(data,cases):
+   for v in data.columns:
+      
+      data[v] = data[v].astype(CategoricalDtype(categories=cases[v]))
+   
+   
+
 def transform2(x,v,par):
 
   h =  dict()
@@ -1075,7 +1296,7 @@ def transform2(x,v,par):
 
   return h
 
-def estimateprob(table,v,states,parvalues, eps = 0.001):
+def estimateprob(table,v,states,parvalues, eps = 0.1):
   p0 = 0.5
   n = len(states)
   phi= table.to_factor()
@@ -1098,12 +1319,13 @@ def estimateprob(table,v,states,parvalues, eps = 0.001):
   return(p1,prop)
 
 
-def estimateprobem(bayest,v,par,states,parvalues, eps = 0.001):
+def estimateprobem(bayest,v,par,states,parvalues, eps = 0.1):
   p0 = 0.5
-  n = len(states)
+  n = len(states[v])
   tot = parvalues.shape[0]
-
-  table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+  table = tfit(parvalues,par,  v, states,s=2,weighted = False)
+  size0 = tsize(table)
+  print("Size ",size0)
 
   prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
 
@@ -1123,30 +1345,111 @@ def estimateprobem(bayest,v,par,states,parvalues, eps = 0.001):
     prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
     p1 = prop.sum()/tot
     parvalues['_weight'] = 1-prop
+    table = tfit(parvalues,par,  v, states,s=2,weighted = True)
 
-    table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2, weighted=True)
+
+    prob = np.array(parvalues.apply(lambda z: table.to_factor().get_value(**transform2(z,v,par)),axis=1))
+    like = vlog(p1 * proa + (1-p1)*prob)
     old = x
 
-    prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
-    like = vlog(p1 * proa + (1-p1)*prob)
     x = like.sum()
+
+    print(p1,x)
+
     p0 = p1
-    print(p0,x)
 
 
   return(p1,prop, table)
 
-
-
-def estimateprobtem(bayest,v,par,states,parvalues, eps = 0.001):
+def estimateprobtem(bayest,v,par,states,parvalues, eps = 0.1):
   p0 = 0.5
-  n = len(states)
+  n = len(states[v])
+  tot = parvalues.shape[0]
+
+  tree = probabilitytree()
+  tree.fit(parvalues,par,  v, states,s=2,double = True)
+  print("Size ", tree.size())
+  prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+  proa = np.full(tot, 1/n)
+  vlog = np.vectorize(math.log)
+  like = vlog(p0 * proa + (1-p0)*prob)
+  
+
+  x = like.sum()
+
+  old = 0
+
+  first = True
+  while x-old> eps or first:
+    first = False
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    
+    p1 = prop.sum()/tot
+    parvalues['_weight'] = 1-prop
+    tree.updatew(parvalues,  v, states, s=2)
+    prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+    
+
+    like = vlog(p1 * proa + (1-p1)*prob)
+    old = x
+
+    x = like.sum()
+
+    print(p1,x)
+
+    p0 = p1
+
+
+  return(p1,prop, tree)
+
+
+def estimateprobtfem(bayest,v,par,states,parvalues, p0, eps = 0.1):
+  n = len(states[v])
   tot = parvalues.shape[0]
 
   tree = probabilitytree()
   tree.fit(parvalues,par,  v, states,s=2,double = True)
   prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
 
+  proa = np.full(tot, 1/n)
+  vlog = np.vectorize(math.log)
+  like = vlog(p0 * proa + (1-p0)*prob)
+  
+
+  x = like.sum()
+
+  old = 0
+
+  first = True
+  while x-old> eps or first:
+    first = False
+    prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
+    
+    parvalues['_weight'] = 1-prop
+    tree.updatew(parvalues,  v, states, s=2)
+    prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
+
+    
+
+    like = vlog(p0 * proa + (1-p0)*prob)
+
+    old = x
+    x = like.sum()
+
+
+  return(old,prop, tree)
+
+
+def estimateprobfem(bayest,v,par,states,parvalues, p0, eps = 0.1):
+
+  n = len(states[v])
+  tot = parvalues.shape[0]
+
+
+  table = tfit(parvalues,par,  v, states,s=2,weighted = False)
+  prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
 
   proa = np.full(tot, 1/n)
 
@@ -1162,20 +1465,17 @@ def estimateprobtem(bayest,v,par,states,parvalues, eps = 0.001):
   while x-old> eps or first:
     first = False
     prop = (p0*proa)/(p0 * proa + (1-p0)*prob)
-    p1 = prop.sum()/tot
     parvalues['_weight'] = 1-prop
-    tree.updatew(parvalues,  v, states, s=2)
-    prob = np.array(parvalues.apply(lambda x:tree.getprob(x),axis=1))
 
-
-    like = vlog(p1 * proa + (1-p1)*prob)
-
+    table =  tfit(parvalues,par,  v, states,s=2,weighted = True)
     old = x
+
+    prob = np.array(parvalues.apply(lambda x: table.to_factor().get_value(**transform2(x,v,par)),axis=1))
+    like = vlog(p0 * proa + (1-p0)*prob)
     x = like.sum()
-    p0 = p1
 
 
-  return(p1,prop, tree)
+  return(old,prop, table)
 
 
 
@@ -1214,7 +1514,7 @@ def categort(tree,p0,v,states,parvalues, eps = 0.001):
   return prop
 
 
-def estimateprobt(tree,v,states,parvalues, eps = 0.001):
+def estimateprobt(tree,v,states,parvalues, eps = 0.1):
   p0 = 0.5
   n = len(states)
   tot = parvalues.shape[0]
@@ -1241,7 +1541,7 @@ def randommodify(vvalues,states,alpha=0.1):
 
     proba = np.random.uniform(0, 1,x)
 
-    change = proba<=alpha
+    change = (proba<=alpha)
 
     for i in range(len(change)):
             if change[i]:
@@ -1266,7 +1566,7 @@ def experiment4(input, output):
       (dfot,dft,pchant) = forward_sample_noisy(network,size=1000)
 
       changes = (0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
-      pchanges = (0.9,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,    0.055)
+      pchanges = (0.80,0.01,0.01,0.02,0.02,0.02,0.02,0.02,0.02,0.02,    0.02)
       trees,counts,w2  = em_algorithmn(network,dfo, changes, pchanges, 30, version='tr')
       tables,countst,w2t  = em_algorithmn(network,dfo, changes, pchanges, 30, version='ta')
 
@@ -1304,7 +1604,6 @@ def experiment4(input, output):
 
 
     
-
 
 
 
@@ -1366,10 +1665,106 @@ def experiment3(input, output,alpha=0.1):
           
           database2['_weight'] = [1]*database2.shape[0]
           bayest = BayesianEstimator(model=network, data=database2, state_names=network.states)
+          print("tabla")
 
-          (p0,changee,table) = estimateprobem(bayest,v,par,network.states[v],database2)
+          (p0,changee,table) = estimateprobem(bayest,v,par,network.states,database2)
+          print("tree")
+          database2['_weight'] = [1]*database2.shape[0]
 
           (p0t,changeet,tree) = estimateprobtem(bayest,v,par,network.states,database2)
+          time.sleep(10)
+          database2[v] = vvalueso
+
+
+        
+
+
+          
+
+       
+
+          time.sleep(3)
+            
+          
+
+
+def experiment5(input, output,alpha=0.1):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizes = list(map(int, line.split()))
+  results = dict()
+  asize = dict()
+  database = dict()
+      
+  
+  
+
+
+  lines = filei.readlines()
+  w = 0
+  l = 0
+
+
+
+
+  for line in lines:
+    line = line.strip()
+    reader = BIFReader("./Networks/"+line)
+    print(line)
+    network = reader.get_model()
+    for v in network.nodes():
+      par = network.get_parents(v)
+      
+    sampler = BayesianModelSampling(network)
+    ts = 1000
+    datatest = sampler.forward_sample(size=ts)
+    
+
+    for x in sizes:
+      database = sampler.forward_sample(size=x)
+      database2 = sampler.forward_sample(size=x)
+
+      for v in network.nodes():
+        par = network.get_parents(v) 
+        size0 = 1.0
+        size1= 0.0
+        for v2 in par:
+            size0 *= network.get_cardinality(v2)
+            size1+= 1
+        size0 *= (network.get_cardinality(v)-1)
+        size1 *= network.get_cardinality(v) -1
+        
+        if len(par)>1:
+
+          vvalues = database2[v].copy()
+          vvalueso = vvalues.copy()
+
+          randommodify(vvalues,network.states[v],alpha=alpha)
+          database2[v] = vvalues
+          
+          bayest = BayesianEstimator(model=network, data=database2, state_names=network.states)
+          y = 1.0
+          print("table")
+
+          while y>=0:
+            database2['_weight'] = [1]*database2.shape[0]
+
+            (like,changee,table) = estimateprobfem(bayest,v,par,network.states,database2,y)
+            print(y,like)
+
+            y+= -0.01
+          y = 1.0
+          print("tree")
+
+          while y>=0:
+            database2['_weight'] = [1]*database2.shape[0]
+
+            (like,changeet,tree) = estimateprobtfem(bayest,v,par,network.states,database2,y)
+
+            print(y,like)
+            y+= -0.01
+          time.sleep(5)
           database2[v] = vvalueso
 
 
@@ -1381,8 +1776,47 @@ def experiment3(input, output,alpha=0.1):
           time.sleep(3)
             
           
-
           
+def experiment6(input,output):
+    filei = open(input,'r')
+    fileo = open(output,"w")
+    lines = filei.readlines()
+
+    for line in lines:
+      line = line.strip()
+      data, extra = arff.loadarff("./datasets/"+line)
+      df = pd.DataFrame(data)
+      str_df = df.select_dtypes([object])
+      df = str_df.stack().str.decode('utf-8').unstack()
+      anoma = df.iloc[:,-1]
+      df = df.iloc[:, :-1]
+
+      est = HillClimbSearch(df)
+      network = BayesianNetwork(est.estimate(scoring_method=BDeuScore(df,equivalent_sample_size=2)))
+      network.fit(data=df, estimator=BayesianEstimator, prior_type="BDeu", equivalent_sample_size=2)
+      network.save(line + '.bif', filetype='bif')
+      changes = (0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
+      pchanges = (0.80,0.01,0.01,0.02,0.02,0.02,0.02,0.02,0.02,0.02,    0.02)
+      # pchanges = (0.95,0.00,0.00,0.00,0.0,0.0,0.0,0.0,0.0,0.0,    0.05)
+
+      tables, w2t  = em_algorithmn(network,df, changes, pchanges, 30, version='ta')
+      print(len(anoma))
+      print(len(w2t))
+
+      pre = evaluate(network,df)
+      total = sum(pre)
+      avera = total/len(pre)
+     
+      print(roc_auc_score(anoma,w2t))
+      time.sleep(4)
+      # for i in range(len(anoma)):
+      #    print(i, anoma[i],w2t[i], pre[i]/avera)
+      #    time.sleep(0.3)
+      
+      
+
+      
+
 
 
 def experiment2(input, output,alpha=0.1):
@@ -1393,9 +1827,15 @@ def experiment2(input, output,alpha=0.1):
   results = dict()
   asize = dict()
   database = dict()
-      
+  lines = filei.readlines()
+  w = 0
+  l = 0
+
+
+
+ 
   
-  
+
 
 
   lines = filei.readlines()
@@ -1435,7 +1875,7 @@ def experiment2(input, output,alpha=0.1):
         if len(par)>1:
           bayest = BayesianEstimator(model=network, data=database, state_names=network.states)
 
-          table = bayest.estimate_cpd(v, prior_type="BDeu", equivalent_sample_size=2)
+          table =  tfit(database,par,  v,network.states,s=2,weighted = True)
           tree = probabilitytree()
           tree.fit(database,par,v, names = network.states,s=20, double=True)
           vvalues = database2[v].copy()
@@ -1561,7 +2001,7 @@ def experiment2(input, output,alpha=0.1):
 
 
 
-experiment4('input','output')
+experiment7('input','output')
 
 # # read dataset
 # # dataset = sklearn.datasets.fetch_covtype(as_frame = True)
