@@ -1,5 +1,6 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.base import clone
+import statsmodels.api as sm
 
 import pandas as pd
 import time
@@ -7,12 +8,19 @@ import math
 import numpy as np
 import itertools
 
+def size(model):
+    return np.count_nonzero(model.coef_)  + 1
+
 def rep(vr):
     seq = [x.split('_')[0] for x in vr]
     seen = []
     unique_list = [x for x in seq if x not in seen and not seen.append(x)]
     return (len(unique_list)< len(vr))
 
+def createformula(target,attributes):
+    all_columns = ' + '.join(attributes)
+    formula = target + "~" + all_columns
+    return formula 
 
 class generalizedlr:
 
@@ -76,15 +84,18 @@ class generalizedlr:
 
 
             
-    def scorell(self,datatest):
+    def scorell(self,datatest, method=1):
         testd = self.tdummies(datatest)
-        probs = self.model.predict_proba(testd[self.fvars])
+        if method==1:
+            probs = self.model.predict_proba(testd[self.fvars])
+            cat = list(self.model.classes_)
 
-        cat = list(self.model.classes_)
-        print(cat)
-
+        elif method==2:
+            probs = np.array(self.model.predict(exog=testd[self.fvars]))
+            cat = list(self.model.model._ynames_map.values())
+        # print(cat)
         ind = datatest.apply(lambda x: cat.index(x[self.var]),axis= 1).to_numpy()
-        
+        # print(ind)
         lpro = []
         n = len(ind)
         for i in range(n):
@@ -97,7 +108,15 @@ class generalizedlr:
 
 
 
+    def fit2(self):
 
+        mnlog  = sm.MNLogit(self.dataset[self.var], self.dummycases[self.fvars])
+        model = mnlog.fit_regularized(alpha=1)
+        self.model = model
+        # print(model.summary())
+        # print(model.summary2())
+
+        
 
     def fit(self):
         model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
@@ -107,22 +126,21 @@ class generalizedlr:
 
         model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
         # print(model.coef_)
-        x = self.bic(model)
+        x = self.akaike(model)
      
 
         best = x
 
         KM = len(self.parents)
-
+        # KM = 2
         k = 2
         while k<= KM:
-            print(k)
             self.expand(k)
             oldvars = self.fvars.copy()
             model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
-            print(model.coef_)
 
-            x = self.bic(model)
+            x = self.akaike(model)
+            k+=1
             if (x> best):
                 best = x
                 k+=1
@@ -136,28 +154,29 @@ class generalizedlr:
         
     def simplify(self):
         model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
+
         model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
         coe = model.coef_
         order = abs(coe).sum(axis=0)
         h=sorted(zip(self.fvars,order), key=lambda x: x[1])
         best = self.akaike(model)
-        print(best)
+        # print(best)
         for x in h:
             if len(self.fvars)<=2:
                 break
             var = x[0]
             self.fvars.remove(var)
-            print(len(self.fvars))
+            # print(len(self.fvars))
             model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
             score = self.akaike(model)
-            print(score)
+            # print(score)
             if score>best:
-                print("variable " + var + " eliminada")
+                # print("variable " + var + " eliminada")
                 best = score
             else:
                 self.fvars.append(var)
-                print("variable " + var + " NO eliminada")
-        self.model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        # self.model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
         self.model.fit(self.dummycases[self.fvars] , self.dataset[self.var]) 
 
 
@@ -174,12 +193,14 @@ class generalizedlr:
         for i in range(n):
             lpro.append(math.log(probs[i][ind[i]]))
 
-        bic = np.array(lpro).sum() - 0.5*math.log(n)*(np.count_nonzero(model.coef_)  + 1)
+        bic = np.array(lpro).sum() - 0.5*math.log(n)*(size(model))
         
 
         
 
         return bic
+    
+
 
 
     def akaike(self,model):
@@ -195,7 +216,7 @@ class generalizedlr:
         for i in range(n):
             lpro.append(math.log(probs[i][ind[i]]))
 
-        bic = np.array(lpro).sum() - (np.count_nonzero(model.coef_)  + 1)
+        bic = np.array(lpro).sum() - (size(model))
         
 
         
