@@ -30,11 +30,11 @@ def sameldavar(l1,l2):
     l1d = set()
     l2d = set()
     for x in l1:
-        (y,z) = x.split('_',1)
-        l1d.add(y)
+        (y,z) = x[::-1].split('_',1)
+        l1d.add(z)
     for x in l2:
-        (y,z) = x.split('_',1)
-        l2d.add(y)
+        (y,z) = x[::-1].split('_',1)
+        l2d.add(z)
     if l1d.intersection(l2d):
         return True
     else:
@@ -87,7 +87,9 @@ class dummyvar:
        newd.operations = self.operations.copy()
        newd.frequencies = self.frequencies.copy()
        if self.lda:
-         newd.lda = self.lda.copy()
+         newd.lda = self.lda
+       newd.transforma = self.transforma
+       newd.ldad = self.ldad
        newd.amp = self.amp
        newd.na = self.na.copy()
        newd.nv = self.nv
@@ -248,8 +250,66 @@ class dummyvar:
                 self.fvars.append(name)
                 self.operations.append((1,vr))
 
+    def expandpairld(self,s=2):
+        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        i = 0
+        j = 1
+        H = len(self.fvars)
+        while i<H:
+            v1 = self.fvars[i]
+            if not v1.startswith('LDA'):
+                i+=1
+                continue
+            s1 = estimator.local_score(self.var,[v1])
+            if self.operations[i][0] in  [0,3]:
+                (h1,h2,h3,l1) = self.operations[i]
+            elif self.operations[i][0] == 6:
+                (h1,h2,h3,h4,h5,l1) = self.operations[i]
+            while j < H:
+                v2 = self.fvars[j]   
+                if not v2.startswith('LDA'):
+                    j+=1
+                    continue
+                newvar = 'OPER_5_'+str(i)+'_'+str(j)
+                estimator.state_names[newvar] = [0,1]
+                if self.operations[j][0] in  [0,3]:
+                    (h1,h2,h3,l2) = self.operations[j]
+                elif self.operations[j][0] == 2:
+                    (h1,h2,h3,h4,l2) = self.operations[j]
+                elif self.operations[j][0] == 6:
+                    (h1,h2,h3,h4,h5,l2) = self.operations[j]
+                if  len(l1.union(l2))>=3:
+                        j+=1
+                        continue
+                if sameldavar(l1,l2):
+                    j+=1
+                    continue
+                    
+                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
+                s2 = estimator.local_score(self.var,[v2])
+
+                snew = estimator.local_score(self.var,[newvar])
+                if snew > max(s1,s2)+1:
+                    self.fvars.append(newvar)
+                    self.na[newvar] = [0,1]
+                    print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
+                    self.operations.append((2,5,i,j,l1.union(l2)))
+                else:
+                    self.dummycases.drop(newvar, axis='columns')
+                j+=1
+            
+            i+=1
+            j = i+1
+
+        
+
+
 
     def expandpair(self,s=2):
+        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        i = 0
+        j = 1
+        H = (self.nv)
 
         estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
         i = 0

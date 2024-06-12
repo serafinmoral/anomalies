@@ -170,7 +170,7 @@ def getprobst(tree,dataset):
  
 def experiment(input,output):
   
-  K=11
+  K=13
   filei = open(input,'r')
   fileo = open(output,"w")
   line = filei.readline()
@@ -246,93 +246,33 @@ def experiment(input,output):
 
              logr = generalizedlr(v,par,database)
              explog(logr,datatest,bics,sizes,loglis)
-            #  logr.fits()
-            #  logli0 = logr.scorell(datatest)
-            #  bic0 = logr.akaike(logr.model)
-            #  size0 = size(logr.model)
-            #  bics.append(bic0)
-            #  sizes.append(size0)
-            #  loglis.append(logli0)
-
              dummy = logr.dummycases
              dummy2 = dummy.copy()
              exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
 
-            #  tree2 = probabilitytree()
-            #  tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-            #  logli4 = tree2.valuate(dummy.transform(datatest))
-            #  size4 = tree2.size()
-            #  logli4s = tree2.valuate(dummy.dummycases)
-            #  bic4 =  logli4s*database.shape[0] - size4
-            #  bics.append(bic4)
-            #  sizes.append(size4)
-            #  loglis.append(logli4)
-
              dummy.expandpair()
-
-             logr.fits()
-             logli0 = logr.scorell(datatest)
-             bic0 = logr.akaike(logr.model)
-             size0 = size(logr.model)
-             bics.append(bic0)
-             sizes.append(size0)
-             loglis.append(logli0)
-
-             tree2 = probabilitytree()
-             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-             logli4 = tree2.valuate(dummy.transform(datatest))
-             size4 = tree2.size()
-             logli4s = tree2.valuate(dummy.dummycases)
-             bic4 =  logli4s*database.shape[0] - size4
-             bics.append(bic4)
-             sizes.append(size4)
-             loglis.append(logli4)
+             explog(logr,datatest,bics,sizes,loglis)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
 
              dummy2.expandldad()
 
              logr.dummycases = dummy2
              dummy = dummy2
-
-
-             logr.fits()
-             logli0 = logr.scorell(datatest)
-             bic0 = logr.akaike(logr.model)
-             size0 = size(logr.model)
-             bics.append(bic0)
-             sizes.append(size0)
-             loglis.append(logli0)
-
-             tree2 = probabilitytree()
-             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-             logli4 = tree2.valuate(dummy.transform(datatest))
-             size4 = tree2.size()
-             logli4s = tree2.valuate(dummy.dummycases)
-             bic4 =  logli4s*database.shape[0] - size4
-             bics.append(bic4)
-             sizes.append(size4)
-             loglis.append(logli4)
+             dummy3 = dummy2.copy()
+             explog(logr,datatest,bics,sizes,loglis)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+          
+             dummy.expandpair()
+             explog(logr,datatest,bics,sizes,loglis)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
 
              
-             dummy.expandpair()
-
-             logr.fits()
-             logli0 = logr.scorell(datatest)
-             bic0 = logr.akaike(logr.model)
-             size0 = size(logr.model)
-             bics.append(bic0)
-             sizes.append(size0)
-             loglis.append(logli0)
-
-             tree2 = probabilitytree()
-             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-             logli4 = tree2.valuate(dummy.transform(datatest))
-             size4 = tree2.size()
-             logli4s = tree2.valuate(dummy.dummycases)
-             bic4 =  logli4s*database.shape[0] - size4
-             bics.append(bic4)
-             sizes.append(size4)
-             loglis.append(logli4)
-            
+             
+             logr.dummycases = dummy3
+             dummy = dummy3
+             dummy.expandpairld()
+             explog(logr,datatest,bics,sizes,loglis)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
 
              
 
