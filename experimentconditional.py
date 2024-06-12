@@ -27,6 +27,32 @@ from dummyvar import *
  
 # Computes de size of a conditional probability distribution stored as a table (pgmpy)
 
+def explog(logr,datatest,bics,sizes,loglis):
+    logr.fits()
+    logli0 = logr.scorell(datatest)
+    bic0 = logr.akaike(logr.model)
+    size0 = size(logr.model)
+    bics.append(bic0)
+    sizes.append(size0)
+    loglis.append(logli0)
+
+
+def exptree(dummy,v,datatest,bics,sizes,loglis,s=10):
+
+    tree2 = probabilitytree()
+    tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
+    logli4 = tree2.valuate(dummy.transform(datatest))
+    size4 = tree2.size()
+    logli4s = tree2.valuate(dummy.dummycases)
+    bic4 =  logli4s*dummy.dummycases.shape[0] - size4
+    bics.append(bic4)
+    sizes.append(size4)
+    loglis.append(logli4)
+    
+
+        
+
+
 def sizet(t):
   return reduce(mul,t.cardinality[1:])*(t.cardinality[0]-1)
   
@@ -143,10 +169,12 @@ def getprobst(tree,dataset):
   return np.array(result)
  
 def experiment(input,output):
+  
+  K=11
   filei = open(input,'r')
   fileo = open(output,"w")
   line = filei.readline()
-  sizes = list(map(int, line.split()))
+  sizesa = list(map(int, line.split()))
 
   
   lines = filei.readlines()
@@ -168,16 +196,17 @@ def experiment(input,output):
       sampler = BayesianModelSampling(network)
       datatest = sampler.forward_sample(size=10000)
       # datatestn = convert(datatest,network.states)
+      transformcat(datatest, network.states)
+
       
 
-      for x in sizes:
-        fileo.write("*"+line+","+str(x))
+      for x in sizesa:
+        fileo.write("*"+line+","+str(x)+"\n")
         lls = []
         ss = []
         
         database = sampler.forward_sample(size=x)
         transformcat(database, network.states)
-        transformcat(datatest, network.states)
 
 
 
@@ -185,140 +214,201 @@ def experiment(input,output):
         for v in network.nodes():
           par = network.get_parents(v) 
           values = len(pd.unique(database[v]))
+          print(v,par) 
 
           
-          if len(par)>2 and values == network.get_cardinality(v):
-             print(v,par) 
-             logr = generalizedlr(v,par,database)
-
-             logr.fit()
-             logli1 = logr.scorell(datatest)
-             bic1 = logr.akaike(logr.model)
-             size1 = size(logr.model)
-             logr.simplify()
-             logli2 = logr.scorell(datatest)
-             size2 = size(logr.model)
-             bic2 = logr.akaike(logr.model)
-
-             
-
-
+          if len(par)>1 and values == network.get_cardinality(v):
+             bics = []
+             sizes = []
+             loglis = []
              table = tfit(database,par,  v, network.states,s=2,weighted=False)
-
+             size0 = sizet(table)
+             if size0<40:
+                 print("Small size")
+                 continue
              logli0 = valuate(table,datatest)
              logli0s = valuate(table,database)
+             bic0 = logli0s*database.shape[0] - size0             
+             bics.append(bic0)
+             sizes.append(size0)
+             loglis.append(logli0)
 
-             size0 = sizet(table)
-             
-             bic0 = logli0s*database.shape[0] - size0
 
              tree = probabilitytree()
              tree.fit(database,par,v, names = network.states,s=10)
              logli3 = tree.valuate(datatest)
              logli3s = tree.valuate(database)
              size3 = tree.size()
-
-
-             
-
              bic3 = logli3s*database.shape[0] - size3
+             bics.append(bic3)
+             sizes.append(size3)
+             loglis.append(logli3)
 
-             dummy = dummyvar(v,par,database)
+             logr = generalizedlr(v,par,database)
+             explog(logr,datatest,bics,sizes,loglis)
+            #  logr.fits()
+            #  logli0 = logr.scorell(datatest)
+            #  bic0 = logr.akaike(logr.model)
+            #  size0 = size(logr.model)
+            #  bics.append(bic0)
+            #  sizes.append(size0)
+            #  loglis.append(logli0)
+
+             dummy = logr.dummycases
+             dummy2 = dummy.copy()
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+
+            #  tree2 = probabilitytree()
+            #  tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
+            #  logli4 = tree2.valuate(dummy.transform(datatest))
+            #  size4 = tree2.size()
+            #  logli4s = tree2.valuate(dummy.dummycases)
+            #  bic4 =  logli4s*database.shape[0] - size4
+            #  bics.append(bic4)
+            #  sizes.append(size4)
+            #  loglis.append(logli4)
+
+             dummy.expandpair()
+
+             logr.fits()
+             logli0 = logr.scorell(datatest)
+             bic0 = logr.akaike(logr.model)
+             size0 = size(logr.model)
+             bics.append(bic0)
+             sizes.append(size0)
+             loglis.append(logli0)
+
              tree2 = probabilitytree()
-             na = dict()
-             for x in dummy.fvars:
-                na[x] = [0,1]
-             na[v] = network.states[v]
-             tree2.fit(dummy.dummycases,dummy.fvars,v, names = na,s=10)
+             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
              logli4 = tree2.valuate(dummy.transform(datatest))
              size4 = tree2.size()
              logli4s = tree2.valuate(dummy.dummycases)
              bic4 =  logli4s*database.shape[0] - size4
-             time.sleep(10)
-             dummy.expand()
-             tree5 = probabilitytree()
-             tree5.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-             logli5 = tree5.valuate(dummy.transform(datatest))
-             size5 = tree5.size()
-             logli5s = tree5.valuate(dummy.dummycases)
-             bic5 =  logli5s*database.shape[0] - size5
-             dummy.expandlda()
-             tree6 = probabilitytree()
-             tree6.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-             logli6 = tree6.valuate(dummy.transform(datatest))
-             size6 = tree6.size()
-             logli6s = tree6.valuate(dummy.dummycases)
-             bic6 =  logli6s*database.shape[0] - size6
+             bics.append(bic4)
+             sizes.append(size4)
+             loglis.append(logli4)
+
+             dummy2.expandldad()
+
+             logr.dummycases = dummy2
+             dummy = dummy2
+
+
+             logr.fits()
+             logli0 = logr.scorell(datatest)
+             bic0 = logr.akaike(logr.model)
+             size0 = size(logr.model)
+             bics.append(bic0)
+             sizes.append(size0)
+             loglis.append(logli0)
+
+             tree2 = probabilitytree()
+             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
+             logli4 = tree2.valuate(dummy.transform(datatest))
+             size4 = tree2.size()
+             logli4s = tree2.valuate(dummy.dummycases)
+             bic4 =  logli4s*database.shape[0] - size4
+             bics.append(bic4)
+             sizes.append(size4)
+             loglis.append(logli4)
+
+             
+             dummy.expandpair()
+
+             logr.fits()
+             logli0 = logr.scorell(datatest)
+             bic0 = logr.akaike(logr.model)
+             size0 = size(logr.model)
+             bics.append(bic0)
+             sizes.append(size0)
+             loglis.append(logli0)
+
+             tree2 = probabilitytree()
+             tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
+             logli4 = tree2.valuate(dummy.transform(datatest))
+             size4 = tree2.size()
+             logli4s = tree2.valuate(dummy.dummycases)
+             bic4 =  logli4s*database.shape[0] - size4
+             bics.append(bic4)
+             sizes.append(size4)
+             loglis.append(logli4)
+            
 
              
 
-             if max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic0:
-                 loglib = logli0
-                 sizeb = size0
-             elif max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic1: 
-                 loglib = logli1
-                 sizeb = size1 
-             elif max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic2: 
-                 loglib = logli2
-                 sizeb = size2
-             elif max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic3:
-                loglib = logli3
-                sizeb = size3
-             elif max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic4:
-                loglib = logli4
-                sizeb = size4
-             elif max([bic0,bic1,bic2,bic3,bic4,bic5,bic6]) == bic5:
-                loglib = logli5
-                sizeb = size5
-             else:
-                loglib = logli6
-                sizeb = size6
-                 
+             
 
-             print(logli0,logli1,logli2, logli3, logli4, logli5, logli6, loglib)
-             fileo.write(str(logli0)+","+str(logli1)+","+str(logli2)+","+ str(logli3)+","+ str(logli4)+","+str(loglib)+"\n")
-             print(bic0,bic1,bic2,bic3,bic4,bic5,bic6)
-             print(size0,size1,size2,size3,size4,size5,size6, sizeb)
-             fileo.write(str(size0)+","+str(size1)+","+str(size2)+","+ str(size3)+","+str(sizeb)+"\n")
-             lls.append((logli0,logli1,logli2,logli3,logli4,logli5,logli6,loglib))
-             ss.append((size0,size1,size2,size3,size4,size5,size6,sizeb))
+             
+ 
+
+             
+
+
+
+
+
+
+             indexm =  bics.index(max(bics))
+
+             loglib = loglis[indexm]
+             sizeb = sizes[indexm]
+
+             i=0
+             sal = ''
+             while i<len(loglis):
+                 sal1 = sal+str(loglis[i])+ ',' + str(loglis[i+1])+ ','
+                 sal2 = sal+str(sizes[i])+ ',' + str(sizes[i+1])+ ','
+                 sal3 = sal+str(bics[i])+ ',' + str(bics[i+1])+ ','
+                 print(loglis[i],loglis[i+1],sizes[i],sizes[i+1],bics[i],bics[i+1])
+                 i+=2
+             print(loglib,sizeb)
+             sal1 = sal1 + str(loglib)
+             sal2 = sal2 + str(sizeb)
+             sal3 = sal3[:-1]
+             loglis.append(loglib)
+             sizes.append(sizeb)
+             
+             fileo.write(sal1+"\n"+sal2+"\n"+sal3+"\n")
+             
+             lls.append(loglis)
+             ss.append(sizes)
                 
-        for i in range(8):
-            lili = [x[i] for x in lls]
-            sizei = [x[i] for x in ss]
+        for i in range(K):
+            lili = [z[i] for z in lls]
+            sizei = [z[i] for z in ss]
             dls[(line,x,i)] = lili 
             dss[(line,x,i)] = sizei 
             if len(lili)>0:
                 averl =np.average(np.array(lili))
                 avers = np.average(np.array(sizei))
                 print(averl,avers)
-                fileo.write("$" +str(i) + "," + str(averl) + ","+str(avers) )
+                fileo.write("$" +str(i) + "," + str(averl) + ","+str(avers) +"\n")
         print("\n")
   print("TOTALES")
   totaldl = dict()
   totalsl = dict()
-  for x in sizes:
-      for i in range(8):
+  for x in sizesa:
+      for i in range(K):
         totaldl[(x,i)] = []
         totalsl[(x,i)] = []
   for line in lines:
         line = line.strip()
-        for x in sizes:
+        for x in sizesa:
             print("Network: ", line, "Size: ", x)
-            fileo.write("Network: " +  line +  "Size: " +  str(x))
-            for i in range(6):
+            fileo.write("Network: " +  line +  "Size: " +  str(x)+"\n")
+            for i in range(K):
                     totaldl[(x,i)] = totaldl[(x,i)] + dls[(line,x,i)]
                     totalsl[(x,i)] = totalsl[(x,i)] + dss[(line,x,i)]
                     if len(dls[(line,x,i)]) >0:
                         avera = np.average(np.array(dls[(line,x,i)]))
                         averso = np.average(np.array(dss[(line,x,i)]))
                         print(avera,averso)
-                        fileo.write(str(avera) + "," +str(averso) )
+                        fileo.write(str(avera) + "," +str(averso)+"\n" )
   
   for x in sizes:
       print("Size: ", x)
       fileo.write("Size: " +  str(x))
-      for i in range(6):
+      for i in range(K):
         avera = np.average(np.array(totaldl[(x,i)]))
         averso = np.average(np.array(totalsl[(x,i)]))
         print(avera,averso)
@@ -341,4 +431,4 @@ def experiment(input,output):
 
           
 
-experiment('input','output2')
+experiment('input','output5')

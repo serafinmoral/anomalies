@@ -1,12 +1,18 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.base import clone
 import statsmodels.api as sm
+from scipy.stats.distributions import chi2
 
 import pandas as pd
 import time
 import math
 import numpy as np
 import itertools
+from dummyvar import *
+
+
+pd.options.mode.chained_assignment = None 
+
 
 def size(model):
     return np.count_nonzero(model.coef_)  + 1
@@ -22,6 +28,9 @@ def createformula(target,attributes):
     formula = target + "~" + all_columns
     return formula 
 
+
+
+
 class generalizedlr:
 
 
@@ -31,10 +40,9 @@ class generalizedlr:
         self.dataset = data
         self.fvars = []
         self.operations = []
-        self.dummycases = None
+        self.dummycases = dummyvar(v,par,data)
         self.model = None
-        self.nv = 0
-        self.prepare()
+        self.nv = len(self.dummycases.fvars)
 
 
     def prepare(self):
@@ -47,51 +55,59 @@ class generalizedlr:
                 self.operations.append((1,v,cas[i]))
         self.nv = len(self.fvars)
 
-    def tdummies(self,data):
-        result = pd.get_dummies(data, columns= self.parents, drop_first=True)
-        for x in self.operations:
-            if x[0]==2:
-                vr = x[1]
-                name = vr[0]
-                for i in range(1,len(vr)):
-                    name = name + "-" + vr[i]
-                cas = result[vr]
-                array = cas.to_numpy()
-                mult = array.prod(axis=1)         
-                result[name] = mult
-        return result
+ 
               
 
+    def expand2(self):
+       i = 0
+       j = 1
+       N = self.dummycases.shape[0]
+       H = len(self.fvars)
+       model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='none')
 
-
-    def expand(self,k=2):
-        s = set(range(self.nv))
-        for h in itertools.combinations(s,k):
-            vr = [self.fvars[i] for i in h]
-            if rep(vr):
-                continue
-            name = vr[0]
-            for i in range(1,len(vr)):
-                name = name + "-" + vr[i]
-            cas = self.dummycases[vr]
-            array = cas.to_numpy()
-            mult = array.prod(axis=1)
-            if mult.sum() >= 5:
-                self.dummycases[name] = mult
-                self.fvars.append(name)
-                self.operations.append((2,vr))
-
+       while i<H:
+            v1 = self.fvars[i]
+            while j < len(self.fvars):
+                v2 = self.fvars[j]
+                newvar = 'OPER_5_'+str(i)+'_'+str(j)
+                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
+                andcases = self.dummycases[v1] * self.dummycases[v2]
+                if len(andcases.unique())>1:
+                    model.fit(self.dummycases[[v1,v2]],self.dummycases[self.var])
+                    ak1 = self.akaike(model,[v1,v2])
+                    model.fit(self.dummycases[[v1,v2,newvar]],self.dummycases[self.var])
+                    ak2 = self.akaike(model,[v1,v2,newvar])
+                    if ak2>ak1:
+                        print("nueva variable ", newvar,ak2-ak1)
+                        self.fvars.append(newvar)
+                        self.operations.append((3,5,i,j))
+                    else:
+                        self.dummycases.drop(newvar,axis=1)
+                j+= 1
+            i+=1
+            j= i+1
+                # if test < t:
+                #     self.fvars.append(newvar)
+                #     self.na[newvar] = [0,1]
+                #     print("nueva variable lg",newvar,p11,pt11)
+                #     self.operations.append((2,5,i,j))
 
 
             
     def scorell(self,datatest, method=1):
-        testd = self.tdummies(datatest)
+        testd = self.dummycases.transform(datatest)
         if method==1:
-            probs = self.model.predict_proba(testd[self.fvars])
+            if self.dummycases.delvar:
+                vars = self.dummycases.fvars.copy()
+                for x in self.dummycases.delvar:
+                    vars.remove(x) 
+            else:
+                vars = self.dummycases.fvars
+            probs = self.model.predict_proba(testd[vars])
             cat = list(self.model.classes_)
 
         elif method==2:
-            probs = np.array(self.model.predict(exog=testd[self.fvars]))
+            probs = np.array(self.model.predict(exog=testd[self.dummycases.fvar]))
             cat = list(self.model.model._ynames_map.values())
         # print(cat)
         ind = datatest.apply(lambda x: cat.index(x[self.var]),axis= 1).to_numpy()
@@ -110,23 +126,81 @@ class generalizedlr:
 
     def fit2(self):
 
-        mnlog  = sm.MNLogit(self.dataset[self.var], self.dummycases[self.fvars])
-        model = mnlog.fit_regularized(alpha=1)
-        self.model = model
-        # print(model.summary())
-        # print(model.summary2())
+        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
-        
+        self.expand2()
+
+        model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+        # print(model.coef_)
+     
+
+        self.model = model
+
+
+    def fit3(self):
+        model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='none')
+        model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+        best = self.akaike(model)
+        self.model = model
+        i=0
+        j=1
+        while i<len(self.fvars):
+            v1 = self.fvars[i]
+            while j < len(self.fvars):
+                v2 = self.fvars[j]
+                newvar = 'OPER_5_'+str(i)+'_'+str(j)
+                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
+                andcases = self.dummycases[v1] * self.dummycases[v2]
+                if len(andcases.unique())>1:
+                    self.fvars.append(newvar)
+                    model.fit(self.dummycases[self.fvars],self.dummycases[self.var])
+                    ak2 = self.akaike(model)
+                    if ak2>best:
+                        print("nueva variable ", newvar,ak2,best)
+                        self.operations.append((3,5,i,j))
+                        best = ak2
+
+                    else:
+                        self.dummycases.drop(newvar,axis=1)
+                        self.fvars.pop()
+                j+=1
+            i+=1
+            j=i+1
+        model.fit(self.dummycases[self.fvars],self.dummycases[self.var])
+        self.model = model
+        return self.model
+                    
+                    
+
+    def fitexpand(self):
+        self.dummycases.expandpair()
+        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        dummy = self.dummycases.dummycases
+
+        model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
+
+        self.model = model
+
+    def fits(self):
+        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
+
+        dummy = self.dummycases.dummycases
+
+        model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
+        self.model = model
+
 
     def fit(self):
         model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
         # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
-        
+        dummy = self.dummycases.dummycases
 
-        model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+        model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
         # print(model.coef_)
-        x = self.akaike(model)
+        x = self.akaike(model,k=0.5)
      
 
         best = x
@@ -135,49 +209,60 @@ class generalizedlr:
         # KM = 2
         k = 2
         while k<= KM:
-            self.expand(k)
+            self.dummycases.expandlr(k)
             oldvars = self.fvars.copy()
-            model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+            model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
 
-            x = self.akaike(model)
+            x = self.akaike(model,k=0.5)
             k+=1
             if (x> best):
                 best = x
                 k+=1
             else:
                 self.vars = oldvars
-                model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+                model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
                 break
                 
         self.model = model
+
+    def simplify3(self):
+        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+        self.model = model
+
 
         
     def simplify(self):
         model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
         # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
-        model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
+        vars = self.dummycases.fvars.copy()
+
+        model.fit(self.dummycases.dummycases[vars] , self.dataset[self.var])
         coe = model.coef_
         order = abs(coe).sum(axis=0)
         h=sorted(zip(self.fvars,order), key=lambda x: x[1])
-        best = self.akaike(model)
+        best = self.akaike(model,k=0.5)
+        
         # print(best)
         for x in h:
             if len(self.fvars)<=2:
                 break
             var = x[0]
-            self.fvars.remove(var)
+            vars.remove(var)
             # print(len(self.fvars))
-            model.fit(self.dummycases[self.fvars] , self.dataset[self.var])
-            score = self.akaike(model)
+            model.fit(self.dummycases.dummycases[vars] , self.dataset[self.var])
+            score = self.akaike(model,k=0.5)
             # print(score)
             if score>best:
                 # print("variable " + var + " eliminada")
                 best = score
+                self.dummycases.delvar.append(var)
+
             else:
-                self.fvars.append(var)
+                vars.append(var)
         # self.model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
-        self.model.fit(self.dummycases[self.fvars] , self.dataset[self.var]) 
+        self.model.fit(self.dummycases.dummycases[vars] , self.dataset[self.var]) 
 
 
     def bic(self,model):
@@ -203,9 +288,15 @@ class generalizedlr:
 
 
 
-    def akaike(self,model):
+    def akaike(self,model,k=1,lista = []):
 
-        probs = model.predict_proba(self.dummycases[self.fvars])
+
+        if lista:
+            probs = model.predict_proba(self.dummycases.dummycases[lista])
+        else:
+            probs = model.predict_proba(self.dummycases.dummycases[self.dummycases.fvars])
+
+
 
         cat = list(model.classes_)
 
@@ -216,7 +307,7 @@ class generalizedlr:
         for i in range(n):
             lpro.append(math.log(probs[i][ind[i]]))
 
-        bic = np.array(lpro).sum() - (size(model))
+        bic = np.array(lpro).sum() - k*(size(model))
         
 
         
