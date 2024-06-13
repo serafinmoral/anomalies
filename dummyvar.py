@@ -12,7 +12,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
-def red(lista,K=50):
+def red(lista,K=20):
     for i in range(len(lista)):
         L = len(lista[i])
         if L>K:
@@ -184,15 +184,17 @@ class dummyvar:
            self.fvars.append(newvar)
            self.na[newvar] = [0,1]
 
-    def expandldad(self):
+    def expandldad(self,K=20):
 
         clf = LinearDiscriminantAnalysis()
         clf.fit(self.dummycases[self.fvars[:self.nv]], self.dummycases[self.var])
         self.lda = clf
         newvars = clf.transform(self.dummycases[self.fvars[:self.nv]])
         (n,nvar)  =newvars.shape
-        amp = newvars.max(axis=0) - newvars.min(axis=0)
-        normal = newvars/amp
+        # amp = newvars.max(axis=0) - newvars.min(axis=0)
+        # normal = newvars/amp
+        normal = newvars
+        amp = 1
         transformer = MDLP(min_split = 0.01)  
 
         self.amp =amp
@@ -211,7 +213,7 @@ class dummyvar:
         for i in range(discrete.shape[1]):
             values = list(range(len(transformer.cut_points_[i])+1))
             v='LDA_'+str(i)
-            if len(values)>50:
+            if len(values)>K:
                 print("Mirar")
             print(v,values)
            
@@ -252,6 +254,8 @@ class dummyvar:
 
     def expandpairld(self,s=2):
         estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        s0 = estimator.local_score(self.var,[])
+
         i = 0
         j = 1
         H = len(self.fvars)
@@ -289,10 +293,10 @@ class dummyvar:
                 s2 = estimator.local_score(self.var,[v2])
 
                 snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+1:
+                if snew > max(s1,s2)+0.02*abs(max(s1,s2)) :
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
-                    print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
+                    print("nueva variables rl",newvar,snew,s0,s1,s2,l1.union(l2))
                     self.operations.append((2,5,i,j,l1.union(l2)))
                 else:
                     self.dummycases.drop(newvar, axis='columns')
@@ -343,7 +347,7 @@ class dummyvar:
                 s2 = estimator.local_score(self.var,[v2])
 
                 snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+1:
+                if snew > max(s1,s2)+0.1*abs(max(s1,s2)):
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
                     print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
