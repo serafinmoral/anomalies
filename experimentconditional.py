@@ -223,7 +223,7 @@ def experiment(input,output):
              loglis = []
              table = tfit(database,par,  v, network.states,s=2,weighted=False)
              size0 = sizet(table)
-             if size0<40:
+             if size0<=64:
                  print("Small size")
                  continue
              logli0 = valuate(table,datatest)

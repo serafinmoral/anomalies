@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-from pgmpy.estimators import BDeuScore
+from pgmpy.estimators import BicScore,BDeuScore
 import math
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import itertools
@@ -253,7 +253,7 @@ class dummyvar:
                 self.operations.append((1,vr))
 
     def expandpairld(self,s=2):
-        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        estimator = BicScore(data=self.dummycases, state_names=self.na)
         s0 = estimator.local_score(self.var,[])
 
         i = 0
@@ -293,7 +293,7 @@ class dummyvar:
                 s2 = estimator.local_score(self.var,[v2])
 
                 snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+0.02*abs(max(s1,s2)) :
+                if snew > max(s1,s2)+0.01*abs(max(s1,s2)) :
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
                     print("nueva variables rl",newvar,snew,s0,s1,s2,l1.union(l2))
@@ -310,12 +310,9 @@ class dummyvar:
 
 
     def expandpair(self,s=2):
-        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
-        i = 0
-        j = 1
-        H = (self.nv)
+     
 
-        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        estimator = BicScore(data=self.dummycases, state_names=self.na)
         i = 0
         j = 1
         H = (self.nv)
@@ -347,7 +344,7 @@ class dummyvar:
                 s2 = estimator.local_score(self.var,[v2])
 
                 snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+0.1*abs(max(s1,s2)):
+                if snew > max(s1,s2)+0.01*abs(max(s1,s2)):
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
                     print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
@@ -364,7 +361,7 @@ class dummyvar:
     def expand(self,s=2):
         
 
-        estimator = BDeuScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
+        estimator = BicScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
         i = 0
         j = 1
         best = max([estimator.local_score(self.var,[v1]) for v1 in self.fvars])
