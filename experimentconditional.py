@@ -216,7 +216,7 @@ def experiment(input,output):
           values = len(pd.unique(database[v]))
           print(v,par) 
 
-          
+           
           if len(par)>1 and values == network.get_cardinality(v):
              bics = []
              sizes = []
