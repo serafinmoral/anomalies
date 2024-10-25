@@ -168,7 +168,6 @@ def getprobst(tree,dataset):
  
 def experiment(input,output):
   
-  K=13
   filei = open(input,'r')
   fileo = open(output,"w")
 
@@ -193,6 +192,7 @@ def experiment(input,output):
       
       for v in tars.columns:
           ld = ldad(tars[v],vars)
+          ld.expandldad(ld.newdata.columns)
            
 
       for x in sizesa:

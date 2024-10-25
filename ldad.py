@@ -70,7 +70,7 @@ class ldad:
                 self.disc.append(x)
                 self.attr[x] = self.attr[x].astype("category")
 
-
+        
         if create:
             self.newdata = pd.get_dummies(self.attr, columns= self.disc, drop_first=True)
             for x in self.attr.columns:
@@ -83,8 +83,11 @@ class ldad:
             for x in self.fvars:
                 self.na[x] = [0,1]
             
-            print(self.var.columns)
-            self.na[self.var.columns] = self.var[self.var].dtype.categories
+            self.var = self.var.astype("category")
+            for x in self.cont:
+                self.newdata[x] = self.attr[x]
+            
+            self.na['class'] = self.var.dtype.categories
 
     def copy(self):
        newd = dummyvar(self.var,self.parents,self.dataset,create=False)
@@ -172,21 +175,18 @@ class ldad:
         return newcases
     
     
-    def expandldad(self,K=20):
+    def expandldad(self,vars,K=20):
 
         clf = LinearDiscriminantAnalysis()
-        clf.fit(self.dummycases[self.fvars[:self.nv]], self.dummycases[self.var])
-        self.lda = clf
-        newvars = clf.transform(self.dummycases[self.fvars[:self.nv]])
+        clf.fit(self.newdata[vars],self.var)
+        newvars = clf.transform(self.newdata[vars])
         (n,nvar)  =newvars.shape
         # amp = newvars.max(axis=0) - newvars.min(axis=0)
         # normal = newvars/amp
         normal = newvars
-        amp = 1
         transformer = MDLP(min_split = 0.01)  
 
-        self.amp =amp
-        transformer.fit(normal,self.dummycases[self.var].cat.codes)
+        transformer.fit(normal,self.var.cat.codes)
 
         red(transformer.cut_points_)
          
