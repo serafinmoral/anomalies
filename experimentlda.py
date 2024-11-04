@@ -2,6 +2,8 @@
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import log_loss
+
 import numpy as np
 import math
 from pgmpy.sampling.Sampling import BayesianModelSampling
@@ -14,6 +16,10 @@ import networkx as nx
 from functools import reduce
 from operator import mul
 from itertools import chain
+from itertools import combinations
+from pgmpy.estimators import BicScore,BDeuScore
+
+
 from scipy.io import arff
 from pandas.api.types import CategoricalDtype
 
@@ -21,6 +27,7 @@ from generalizedlr import *
 from ProbabilityTree import *
 from ldad import *
 from ucimlrepo import fetch_ucirepo 
+from sklearn.model_selection import train_test_split
 
  
 # Computes de size of a conditional probability distribution stored as a table (pgmpy)
@@ -35,18 +42,25 @@ def explog(logr,datatest,bics,sizes,loglis):
     loglis.append(logli0)
 
 
-def exptree(dummy,v,datatest,bics,sizes,loglis,s=10):
+def createnet(attr,tar):
+   vars = list(attr.columns)
+   v = tar.name
+   result = nx.Graph()
+   result.add_nodes_from(vars)
 
-    tree2 = probabilitytree()
-    tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-    logli4 = tree2.valuate(dummy.transform(datatest))
-    size4 = tree2.size()
-    logli4s = tree2.valuate(dummy.dummycases)
-    bic4 =  logli4s*dummy.dummycases.shape[0] - size4
-    bics.append(bic4)
-    sizes.append(size4)
-    loglis.append(logli4)
+   complete = pd.concat([attr,tar],axis=1)
+
+   for (v1,v2) in combinations(vars,2):
+      bde = BDeuScore(data=complete,equivalent_sample_size=5)
+      sc1 = bde.local_score(v1,[v])
+      sc2 = bde.local_score(v1,[v,v2])
+      if sc2> sc1:
+        result.add_edge(v1,v2)
+     
+   return result
     
+
+
 
         
 
@@ -54,11 +68,8 @@ def exptree(dummy,v,datatest,bics,sizes,loglis,s=10):
 def sizet(t):
   return reduce(mul,t.cardinality[1:])*(t.cardinality[0]-1)
   
-def transformcat(data,cases):
-   for v in data.columns:
-      
-      data[v] = data[v].astype(CategoricalDtype(categories=cases[v]))
 
+  
 
 
     
@@ -68,92 +79,6 @@ def transformcat(data,cases):
 
 
 
-
-
-
-def tfit(dataset,parents,node, names,s=2, weighted=False):
-  node_cardinality = len(names[node])
-  parents_cardinalities = [len(names[parent]) for parent in parents]
-  cpd_shape = (node_cardinality, np.prod(parents_cardinalities, dtype=int))
-
-  alpha = float(s) / (node_cardinality * np.prod(parents_cardinalities))
-  pseudo_counts = np.ones(cpd_shape, dtype=float) * alpha
-  if weighted and ("_weight" not in dataset.columns):
-            raise ValueError("data must contain a `_weight` column if weighted=True")
-  if not parents:
-            # count how often each state of 'variable' occurred
-            if weighted:
-                state_count_data = dataset.groupby([node])["_weight"].sum()
-            else:
-                state_count_data = dataset.loc[:, node].value_counts()
-
-            state_counts = (
-                state_count_data.reindex(names[node])
-                .fillna(0)
-                .to_frame()
-            )
-  else:
-    parents_states = [names[parent] for parent in parents]
-    if weighted:
-                state_count_data = (
-                    dataset.groupby([node] + parents)["_weight"]
-                    .sum()
-                    .unstack(parents)
-                )
-
-    else:
-                state_count_data = (
-                    dataset.groupby([node] + parents, observed=True)
-                    .size()
-                    .unstack(parents)
-                )
-
-    if not isinstance(state_count_data.columns, pd.MultiIndex):
-                state_count_data.columns = pd.MultiIndex.from_arrays([state_count_data.columns])
-    row_index = names[node]
-    column_index = pd.MultiIndex.from_product(parents_states, names=parents)
-    state_counts = state_count_data.reindex(
-                    index=row_index, columns=column_index
-                ).fillna(0)
-  
-  bayesian_counts = state_counts + pseudo_counts
-
-  cpd = TabularCPD(
-            node,
-            node_cardinality,
-            np.array(bayesian_counts),
-            evidence=parents,
-            evidence_card=parents_cardinalities,
-            state_names={var: names[var] for var in chain([node], parents)},
-        )
-  cpd.normalize()
-  return cpd
-
-
-def valuate(table,dataset):
-  factor = table.to_factor()
-  s = dataset.shape[0]
-  result = 0.0
-  evidence = table.variables
-
-  for line in dataset.iterrows():
-    index = {v: line[1][v] for v in evidence}
-    x = factor.get_value(**index)  
-    result += math.log(x)
-  return result/s
-
-
-def getprobs(table,dataset):
-  factor = table.to_factor()
-  s = dataset.shape[0]
-  result = []
-  evidence = table.variables
-
-  for line in dataset.iterrows():
-    index = {v: line[1][v] for v in evidence}
-    x = factor.get_value(**index)  
-    result.append(x)
-  return np.array(result)
 
 
 
@@ -190,86 +115,72 @@ def experiment(input,output):
       vars = df.features
       tars = df.targets
       
+    
+
       for v in tars.columns:
-          ld = ldad(tars[v],vars)
-          ld.expandldad(ld.newdata.columns)
-           
+        tars[v] = tars[v].astype('category')
+        trainX,testX,trainY,testY = train_test_split(vars,tars[v],test_size=0.20)
 
-      for x in sizesa:
-        fileo.write("*"+line+","+str(x)+"\n")
-        lls = []
-        ss = []
+
+        labels = tars[v].dtype.categories    
+        ld = ldad(trainY,trainX)
+        clf1 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        testXm1 = ld.transform(testX)
+        ac1 = clf1.score(testXm1,testY)
+        print("Accuracy simple: ",ac1)
+        y_prob = clf1.predict_proba(testXm1)
+        ll1 = log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood simple: ",ll1)
+
         
-        database = sampler.forward_sample(size=x)
-        transformcat(database, network.states)
+        ld.expandldad(ld.fvars.copy())
+
+        clf2 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        testXm2 = ld.transform(testX)
+        ac2 = clf2.score(testXm2,testY)
+        print("Accuracy lda: ",ac2)
+        y_prob = clf2.predict_proba(testXm2)
+        ll2= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood lda: ",ll2)
+
+        net = createnet(trainX,trainY)
+        cliques = nx.find_cliques(net)
+
+        ld2 = ldad(trainY,trainX)
+
+        for c in cliques:
+           if len(c)>1:
+                nvars = ld2.findvars(c)
+                ld2.expandldad(nvars)
+        clf3 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld2.newdata, trainY)
+        testXm3 = ld2.transform(testX)
+        ac3 = clf3.score(testXm3,testY)
+        print("Accuracy lda local: ",ac3)
+        y_prob = clf3.predict_proba(testXm3)
+        ll3= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood lda local: ",ll3)
+
+        cliques = nx.find_cliques(net)
+        for c in cliques:
+           if len(c)>1:
+                nvars = ld.findvars(c)
+                ld.expandldad(nvars)
+        clf4 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        testXm4 = ld.transform(testX)
+        ac4 = clf4.score(testXm4,testY)
+        print("Accuracy lda local: ",ac4)
+        y_prob = clf4.predict_proba(testXm4)
+        ll4= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood lda local +: ",ll4)
 
 
+                
 
-
-        for v in network.nodes():
-          par = network.get_parents(v) 
-          values = len(pd.unique(database[v]))
-          print(v,par) 
-
+        
            
-          if len(par)>1 and values == network.get_cardinality(v):
-             bics = []
-             sizes = []
-             loglis = []
-             table = tfit(database,par,  v, network.states,s=2,weighted=False)
-             size0 = sizet(table)
-             if size0<=64:
-                 print("Small size")
-                 continue
-             logli0 = valuate(table,datatest)
-             logli0s = valuate(table,database)
-             bic0 = logli0s*database.shape[0] - size0             
-             bics.append(bic0)
-             sizes.append(size0)
-             loglis.append(logli0)
+        
 
 
-             tree = probabilitytree()
-             tree.fit(database,par,v, names = network.states,s=10)
-             logli3 = tree.valuate(datatest)
-             logli3s = tree.valuate(database)
-             size3 = tree.size()
-             bic3 = logli3s*database.shape[0] - size3
-             bics.append(bic3)
-             sizes.append(size3)
-             loglis.append(logli3)
-
-             logr = generalizedlr(v,par,database)
-             explog(logr,datatest,bics,sizes,loglis)
-             dummy = logr.dummycases
-             dummy2 = dummy.copy()
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
-
-             dummy.expandpair()
-             explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
-
-             dummy2.expandldad()
-
-             logr.dummycases = dummy2
-             dummy = dummy2
-             dummy3 = dummy2.copy()
-             explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
-          
-             dummy.expandpair()
-             explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
-
-             
-             
-             logr.dummycases = dummy3
-             dummy = dummy3
-             dummy.expandpairld()
-             explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
-
-             
 
              
 
@@ -280,80 +191,7 @@ def experiment(input,output):
 
 
 
-
-
-
-             indexm =  bics.index(max(bics))
-
-             loglib = loglis[indexm]
-             sizeb = sizes[indexm]
-
-             i=0
-             sal = ''
-             while i<len(loglis):
-                 sal1 = sal+str(loglis[i])+ ',' + str(loglis[i+1])+ ','
-                 sal2 = sal+str(sizes[i])+ ',' + str(sizes[i+1])+ ','
-                 sal3 = sal+str(bics[i])+ ',' + str(bics[i+1])+ ','
-                 print(loglis[i],loglis[i+1],sizes[i],sizes[i+1],bics[i],bics[i+1])
-                 i+=2
-             print(loglib,sizeb)
-             sal1 = sal1 + str(loglib)
-             sal2 = sal2 + str(sizeb)
-             sal3 = sal3[:-1]
-             loglis.append(loglib)
-             sizes.append(sizeb)
-             
-             fileo.write(sal1+"\n"+sal2+"\n"+sal3+"\n")
-             
-             lls.append(loglis)
-             ss.append(sizes)
-                
-        for i in range(K):
-            lili = [z[i] for z in lls]
-            sizei = [z[i] for z in ss]
-            dls[(line,x,i)] = lili 
-            dss[(line,x,i)] = sizei 
-            if len(lili)>0:
-                averl =np.average(np.array(lili))
-                avers = np.average(np.array(sizei))
-                print(averl,avers)
-                fileo.write("$" +str(i) + "," + str(averl) + ","+str(avers) +"\n")
-        print("\n")
-  print("TOTALES")
-  totaldl = dict()
-  totalsl = dict()
-  for x in sizesa:
-      for i in range(K):
-        totaldl[(x,i)] = []
-        totalsl[(x,i)] = []
-  for line in lines:
-        line = line.strip()
-        for x in sizesa:
-            print("Network: ", line, "Size: ", x)
-            fileo.write("Network: " +  line +  "Size: " +  str(x)+"\n")
-            for i in range(K):
-                    totaldl[(x,i)] = totaldl[(x,i)] + dls[(line,x,i)]
-                    totalsl[(x,i)] = totalsl[(x,i)] + dss[(line,x,i)]
-                    if len(dls[(line,x,i)]) >0:
-                        avera = np.average(np.array(dls[(line,x,i)]))
-                        averso = np.average(np.array(dss[(line,x,i)]))
-                        print(avera,averso)
-                        fileo.write(str(avera) + "," +str(averso)+"\n" )
   
-  for x in sizes:
-      print("Size: ", x)
-      fileo.write("Size: " +  str(x))
-      for i in range(K):
-        avera = np.average(np.array(totaldl[(x,i)]))
-        averso = np.average(np.array(totalsl[(x,i)]))
-        print(avera,averso)
-        fileo.write(str(avera) + "," +str(averso) )
-  fileo.close()
-          
-   
-             
-               
-           
 
 
 

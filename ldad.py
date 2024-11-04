@@ -11,6 +11,12 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
+def check(v,e):
+    if str(v)==str(e):
+        return 1
+    else:
+        return 0
+
 def red(lista,K=20):
     for i in range(len(lista)):
         L = len(lista[i])
@@ -25,19 +31,7 @@ def rep(vr):
     unique_list = [x for x in seq if x not in seen and not seen.append(x)]
     return (len(unique_list)< len(vr))
 
-def sameldavar(l1,l2):
-    l1d = set()
-    l2d = set()
-    for x in l1:
-        (y,z) = x[::-1].split('_',1)
-        l1d.add(z)
-    for x in l2:
-        (y,z) = x[::-1].split('_',1)
-        l2d.add(z)
-    if l1d.intersection(l2d):
-        return True
-    else:
-        return False
+
 
 
 
@@ -64,6 +58,7 @@ class ldad:
         self.disc = []
 
         for x in attr.columns:
+
             if  attr[x].dtypes == 'float64':
                 self.cont.append(x)
             else:
@@ -75,9 +70,9 @@ class ldad:
             self.newdata = pd.get_dummies(self.attr, columns= self.disc, drop_first=True)
             for x in self.attr.columns:
                 cas = self.attr[x].dtype.categories
+                self.operations.append((0,x,cas[1:]))
                 for i in range(1,len(cas)):
-                    self.fvars.append(x+'_'+cas[i])
-                    self.operations.append((0,x,cas[i],{x+'_'+cas[i]}))
+                    self.fvars.append(x+'_'+str(cas[i]))
             self.nv = len(self.fvars)
             
             for x in self.fvars:
@@ -89,91 +84,48 @@ class ldad:
             
             self.na['class'] = self.var.dtype.categories
 
-    def copy(self):
-       newd = dummyvar(self.var,self.parents,self.dataset,create=False)
-       newd.dummycases = self.dummycases.copy()
-       newd.fvars = self.fvars.copy()
-       newd.oper = self.operations.copy()
-   
-       newd.amp = self.amp
-       newd.na = self.na.copy()
-       newd.nv = self.nv
-       newd.delvar = self.delvar.copy()
-       return newd
+    def transform(self,data):
+        result = pd.DataFrame(index = data.index)
+        for op in self.operations:
+            if op[0] == 0:
+                (h,var,cases) = op
+                for c in cases:
+                   result[var+'_'+str(c)] =  data[var].apply(check,args= [c]) 
+            elif op[0] == 1:
+                (h,nld,vars,clf,transformer) = op
+                newvars = clf.transform(result[vars])
+                (n,nvar)  =newvars.shape
+                discrete = transformer.transform(newvars)
+                listc = ['LDA_'+str(nld)+'_'+str(i) for i in range(discrete.shape[1])]
+                discretedf = pd.DataFrame(discrete, columns= listc,index=data.index)
 
-    def restrict(self,node,value):
-       newdummy = dummyvar(self.var,self.parents,self.dataset, create= False)
-       newdummy.fvars = self.fvars
-       newdummy.na = self.na
-       newdummy.nv = self.nv
-       newdummy.operations = self.operations
-       newdummy.dummycases = self.dummycases.loc[self.dummycases[node] == value ]
-       return newdummy
+                for i in range(discrete.shape[1]):
+                    values = list(range(len(transformer.cut_points_[i])+1))
+                    v='LDA_'+str(nld)+'_'+str(i)
+                    discretedf[v].astype(CategoricalDtype(categories=values))
+                    for x in values[1:]:
+                        result[v+'_'+str(x)] =  discretedf[v].apply(check,args= [x])
+                    
 
 
 
-    def transform(self,newdata):
-        newcases = pd.get_dummies(newdata, columns = self.parents, drop_first=True)
-        if self.ldad:
-            newvars = self.lda.transform(newcases[self.fvars[:self.nv]])
-            normal = newvars/self.amp
-            discrete = self.transforma.transform(normal)
-            listc = ['LDA_'+str(i) for i in range(discrete.shape[1])]
-            discretedf = pd.DataFrame(discrete, columns= listc)
-            for v in discretedf.columns:
-                print(v)
-                print(self.na[v])
-                discretedf[v] = discretedf[v].astype(CategoricalDtype(categories=self.na[v]))
-            dummydf = pd.get_dummies(discretedf,columns=listc,drop_first=True)  
+              
+                
+                
+        return result       
+
+
+
+
+
+    def findvars(self,cl):
+        result = []
+        for v in self.newdata.columns:
+            h = v.split('_')
+            if h[0] in cl:
+                result.append(v)
+        return result
         
-            newcases = pd.concat([newcases,dummydf],axis = 1)
-
-        for x in self.operations:
-            if x[0] == 2:
-                (oper,k,i,j,l) = x
-                newvar = 'OPER_'+str(k)+'_'+str(i)+'_'+str(j)
-                v1 = self.fvars[i]
-                v2 = self.fvars[j]
-                if k==1:
-                    newcases[newvar] = newcases[v1]*newcases[v2]
-                elif k==2:
-                    newcases[newvar] = newcases[v1]*(1-newcases[v2])
-                elif k==3:
-                    newcases[newvar] = (1-newcases[v1])*(newcases[v2])
-                elif k==4:
-                    newcases[newvar] = (1-newcases[v1])*(1-newcases[v2])
-                elif k==5:
-                    newcases[newvar] = (1-newcases[v1])*(1-newcases[v2])+ newcases[v1]*newcases[v2]
-            elif x[0]==1:
-                vr = x[1]
-                name = vr[0]
-                for i in range(1,len(vr)):
-                    name = name + "-" + vr[i]
-                cas = newcases[vr]
-                array = cas.to_numpy()
-                mult = array.prod(axis=1)         
-                newcases[name] = mult
-            elif x[0] == 3:
-               (oper,clf,i,[l]) = x
-               newvalues = clf.transform(newcases[self.fvars[:self.nv]])
-               dnew = np.where(newvalues > 0, 1, 0)
-               newvar = "LDA_" + str(i)
-               newcases[newvar] = dnew[:,i]
-            elif x[0]==4:
-                (oper,listn,listp) = x
-                newvar = ''
-                for v in listn:
-                    newvar = newvar + v + "_0"
-                for v in listp:
-                    newvar = newvar + v + "_1"
-                newcases[newvar] = newcases.apply(lambda row: cnewvar(row,listp,listn),axis=1)
-                for v in listn:
-                    newcases[newvar] = newcases[newvar]*(1-newcases[v])
-                for v in listp:
-                    newcases[newvar] = newcases[newvar]*(newcases[v])
-           
-        return newcases
-    
     
     def expandldad(self,vars,K=20):
 
@@ -181,224 +133,36 @@ class ldad:
         clf.fit(self.newdata[vars],self.var)
         newvars = clf.transform(self.newdata[vars])
         (n,nvar)  =newvars.shape
-        # amp = newvars.max(axis=0) - newvars.min(axis=0)
-        # normal = newvars/amp
-        normal = newvars
+ 
+
         transformer = MDLP(min_split = 0.01)  
 
-        transformer.fit(normal,self.var.cat.codes)
+    
+        transformer.fit(newvars,self.var.cat.codes)
 
-        red(transformer.cut_points_)
-         
-        self.transforma = transformer
-        self.ldad = True  
-        discrete = transformer.transform(normal)
-
-        listc = ['LDA_'+str(i) for i in range(discrete.shape[1])]
         
+        discrete = transformer.transform(newvars)
 
-        discretedf = pd.DataFrame(discrete, columns= listc)
+        
+        nld = self.nlda
+        self.nlda +=1
+
+        listc = ['LDA_'+str(nld)+'_'+str(i) for i in range(discrete.shape[1])]
+
+
+        discretedf = pd.DataFrame(discrete, columns= listc,index=self.newdata.index)
+        self.operations.append((1,nld,vars,clf,transformer))
+
         for i in range(discrete.shape[1]):
             values = list(range(len(transformer.cut_points_[i])+1))
-            v='LDA_'+str(i)
-            if len(values)>K:
-                print("Mirar")
-            print(v,values)
-           
+            v='LDA_'+str(nld)+'_'+str(i)
             self.na[v] = values
             discretedf[v].astype(CategoricalDtype(categories=values))
-
+            for x in values[1:]:
+                self.newdata[v+'_'+str(x)] =  discretedf[v].apply(check,args= [x])
+                self.fvars.append(v+'_'+str(x))
        
-        dummydf = pd.get_dummies(discretedf,columns=listc,drop_first=True)  
-        
-        self.dummycases = pd.concat([self.dummycases,dummydf],axis = 1)
-        self.fvars = self.fvars + list(dummydf.columns)
-        for x in dummydf.columns:
-            (n1,n2,n3) = x.split('_')
-            self.operations.append((6,'LDAd',x,clf,transformer,{x}))
-            self.na[x] = [0,1]
 
         
                 
-          
-
-    
-    def expandlr(self,k=2):
-        s = set(range(self.nv))
-        for h in itertools.combinations(s,k):
-            vr = [self.fvars[i] for i in h]
-            if rep(vr):
-                continue
-            name = vr[0]
-            for i in range(1,len(vr)):
-                name = name + "-" + vr[i]
-            cas = self.dummycases[vr]
-            array = cas.to_numpy()
-            mult = array.prod(axis=1)
-            if mult.sum() >= 5:
-                self.dummycases[name] = mult
-                self.fvars.append(name)
-                self.operations.append((1,vr))
-
-    def expandpairld(self,s=2):
-        estimator = BicScore(data=self.dummycases, state_names=self.na)
-        s0 = estimator.local_score(self.var,[])
-
-        i = 0
-        j = 1
-        H = len(self.fvars)
-        while i<H:
-            v1 = self.fvars[i]
-            if not v1.startswith('LDA'):
-                i+=1
-                continue
-            s1 = estimator.local_score(self.var,[v1])
-            if self.operations[i][0] in  [0,3]:
-                (h1,h2,h3,l1) = self.operations[i]
-            elif self.operations[i][0] == 6:
-                (h1,h2,h3,h4,h5,l1) = self.operations[i]
-            while j < H:
-                v2 = self.fvars[j]   
-                if not v2.startswith('LDA'):
-                    j+=1
-                    continue
-                newvar = 'OPER_5_'+str(i)+'_'+str(j)
-                estimator.state_names[newvar] = [0,1]
-                if self.operations[j][0] in  [0,3]:
-                    (h1,h2,h3,l2) = self.operations[j]
-                elif self.operations[j][0] == 2:
-                    (h1,h2,h3,h4,l2) = self.operations[j]
-                elif self.operations[j][0] == 6:
-                    (h1,h2,h3,h4,h5,l2) = self.operations[j]
-                if  len(l1.union(l2))>=3:
-                        j+=1
-                        continue
-                if sameldavar(l1,l2):
-                    j+=1
-                    continue
-                    
-                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
-                s2 = estimator.local_score(self.var,[v2])
-
-                snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+0.01*abs(max(s1,s2)) :
-                    self.fvars.append(newvar)
-                    self.na[newvar] = [0,1]
-                    print("nueva variables rl",newvar,snew,s0,s1,s2,l1.union(l2))
-                    self.operations.append((2,5,i,j,l1.union(l2)))
-                else:
-                    self.dummycases.drop(newvar, axis='columns')
-                j+=1
-            
-            i+=1
-            j = i+1
-
-        
-
-
-
-    def expandpair(self,s=2):
-     
-
-        estimator = BicScore(data=self.dummycases, state_names=self.na)
-        i = 0
-        j = 1
-        H = (self.nv)
-        while i<H:
-            v1 = self.fvars[i]
-            s1 = estimator.local_score(self.var,[v1])
-            if self.operations[i][0] in  [0,3]:
-                (h1,h2,h3,l1) = self.operations[i]
-            elif self.operations[i][0] == 6:
-                (h1,h2,h3,h4,h5,l1) = self.operations[i]
-            while j < self.nv:
-                v2 = self.fvars[j]   
-                newvar = 'OPER_5_'+str(i)+'_'+str(j)
-                estimator.state_names[newvar] = [0,1]
-                if self.operations[j][0] in  [0,3]:
-                    (h1,h2,h3,l2) = self.operations[j]
-                elif self.operations[j][0] == 2:
-                    (h1,h2,h3,h4,l2) = self.operations[j]
-                elif self.operations[j][0] == 6:
-                    (h1,h2,h3,h4,h5,l2) = self.operations[j]
-                if  len(l1.union(l2))>=3:
-                     j+=1
-                     continue
-                if sameldavar(l1,l2):
-                    j+=1
-                    continue
-                   
-                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
-                s2 = estimator.local_score(self.var,[v2])
-
-                snew = estimator.local_score(self.var,[newvar])
-                if snew > max(s1,s2)+0.01*abs(max(s1,s2)):
-                    self.fvars.append(newvar)
-                    self.na[newvar] = [0,1]
-                    print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
-                    self.operations.append((2,5,i,j,l1.union(l2)))
-                else:
-                    self.dummycases.drop(newvar, axis='columns')
-                j+=1
-            
-            i+=1
-            j = i+1
-
-           
  
-    def expand(self,s=2):
-        
-
-        estimator = BicScore(data=self.dummycases, state_names=self.na, equivalent_sample_size=s)
-        i = 0
-        j = 1
-        best = max([estimator.local_score(self.var,[v1]) for v1 in self.fvars])
-        oper = [5]
-        H = len(self.fvars)
-        while i<H:
-            v1 = self.fvars[i]
-            (q1,q2,q3,l1) = self.operations[i]
-            while j < len(self.fvars):
-                v2 = self.fvars[j]
-                if self.operations[j][0] in  [0,3]:
-                    (h1,h2,h3,l2) = self.operations[j]
-                elif self.operations[j][0] == 2:
-                    (h1,h2,h3,h4,l2) = self.operations[j]
-                # if  len(l1.union(l2))>=3:
-                #      j+=1
-                #      break  
-                for k in oper:
-                  newvar = 'OPER_'+str(k)+'_'+str(i)+'_'+str(j)
-                  estimator.state_names[newvar] = [0,1]
-
-                  if k==1:
-                    self.dummycases[newvar] = self.dummycases[v1]*self.dummycases[v2]
-                  elif k==2:
-                    self.dummycases[newvar] = self.dummycases[v1]*(1-self.dummycases[v2])
-                  elif k==3:
-                    self.dummycases[newvar] = (1-self.dummycases[v1])*(self.dummycases[v2])
-                  elif k==4:
-                    self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2])
-                  elif k==5:
-                    self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
-                  
-
-                  snew = estimator.local_score(self.var,[newvar])
-                  if snew > best:
-                    self.fvars.append(newvar)
-                    self.na[newvar] = [0,1]
-                    print("nueva variable",newvar,snew,best)
-                    self.operations.append((2,k,i,j,l1.union(l2)))
-                    best = snew
-                  else:
-                    self.dummycases.drop(newvar, axis='columns')
-                j+=1
-            
-            i+=1
-            j = i+1
-
-
-    
-
-
-
