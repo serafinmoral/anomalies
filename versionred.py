@@ -9,6 +9,7 @@ from pgmpy.readwrite import BIFReader
 import pandas as pd
 import random as rd
 import networkx as nx
+import time
 
 
 def transform(data,net):
@@ -478,7 +479,7 @@ def em_algorithm(net, dataset,  pc,wc, s=1, epsilon=0.1, iterations = 30):
 
 
 
-reader = BIFReader("barley.bif")
+reader = BIFReader("Networks/barley.bif")
 net = reader.get_model()
 
 (dfo,df,pchan) = forward_sample_noisy(net,size=500)
@@ -513,7 +514,7 @@ print(st)
 for i in range(len(changes)):
    print(changes[i], counts[i])
 
-
+time.sleep(40)
 (dfo2,df2,pchan2) = forward_sample_noisy(net,size=500)
 
 poc,pvec = predict(net,df2,llgr,lsimp,counts,changes)

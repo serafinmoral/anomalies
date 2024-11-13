@@ -9,6 +9,8 @@ from mdlp.discretization import MDLP
 from pandas.api.types import CategoricalDtype
 import warnings
 
+
+
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
 def check(v,e):
@@ -56,6 +58,9 @@ class ldad:
         self.nlda = 0
         self.cont = []
         self.disc = []
+        self.dummyv = []
+
+
 
         for x in attr.columns:
 
@@ -73,6 +78,7 @@ class ldad:
                 self.operations.append((0,x,cas[1:]))
                 for i in range(1,len(cas)):
                     self.fvars.append(x+'_'+str(cas[i]))
+                    self.dummyv.append(x+'_'+str(cas[i]))
             self.nv = len(self.fvars)
             
             for x in self.fvars:

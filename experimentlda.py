@@ -1,8 +1,13 @@
-
+from sklearn import tree
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import log_loss
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
+from emclassifier import *
+
 
 import numpy as np
 import math
@@ -133,15 +138,24 @@ def experiment(input,output):
         print("Loglikelihood simple: ",ll1)
 
         
+        emclas = emclassifier(ld.newdata,trainY,clf1,labels)
+        emclas.fit()
+        normal,probe = emclas.probanormal(testXm1,testY)
+        y_prob = emclas.predict_proba(testXm1)
+        ll1em= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood simple em: ",ll1em)
+
         ld.expandldad(ld.fvars.copy())
 
-        clf2 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        clf2 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter = 300).fit(ld.newdata, trainY)
         testXm2 = ld.transform(testX)
         ac2 = clf2.score(testXm2,testY)
         print("Accuracy lda: ",ac2)
-        y_prob = clf2.predict_proba(testXm2)
+        
+        
         ll2= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda: ",ll2)
+        
 
         net = createnet(trainX,trainY)
         cliques = nx.find_cliques(net)
@@ -152,7 +166,7 @@ def experiment(input,output):
            if len(c)>1:
                 nvars = ld2.findvars(c)
                 ld2.expandldad(nvars)
-        clf3 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld2.newdata, trainY)
+        clf3 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld2.newdata, trainY)
         testXm3 = ld2.transform(testX)
         ac3 = clf3.score(testXm3,testY)
         print("Accuracy lda local: ",ac3)
@@ -160,12 +174,15 @@ def experiment(input,output):
         ll3= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda local: ",ll3)
 
+
+
+
         cliques = nx.find_cliques(net)
         for c in cliques:
            if len(c)>1:
                 nvars = ld.findvars(c)
                 ld.expandldad(nvars)
-        clf4 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        clf4 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld.newdata, trainY)
         testXm4 = ld.transform(testX)
         ac4 = clf4.score(testXm4,testY)
         print("Accuracy lda local: ",ac4)
@@ -173,8 +190,38 @@ def experiment(input,output):
         ll4= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda local +: ",ll4)
 
+        clf = MLPClassifier(random_state=1, max_iter=300).fit(ld.newdata[ld.dummyv], trainY)
+        ac5 = clf.score(testXm1[ld.dummyv],testY)
+        print("Neural network acc·", ac5 )
+        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        ll5= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood neural network: ",ll5)
 
-                
+
+        clf = tree.DecisionTreeClassifier().fit(ld.newdata[ld.dummyv], trainY)
+        ac6 = clf.score(testXm1[ld.dummyv],testY)
+        print("Classification tree", ac6 )
+        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        ll6= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood classification tree: ",ll6)                
+
+
+        clf = HistGradientBoostingClassifier().fit(ld.newdata[ld.dummyv], trainY)
+        ac7 = clf.score(testXm1[ld.dummyv],testY)
+        print("Boosting tree", ac7 )
+        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        ll7= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood boosting tree: ",ll7)                
+
+
+
+        clf = RandomForestClassifier().fit(ld.newdata[ld.dummyv], trainY)
+        ac8 = clf.score(testXm1[ld.dummyv],testY)
+        print("Classification random forest", ac8 )
+        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        ll8= log_loss(testY, y_prob,labels = labels) 
+        print("Loglikelihood random forest: ",ll8)                
+
 
         
            
