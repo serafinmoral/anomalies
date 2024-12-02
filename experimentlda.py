@@ -190,35 +190,35 @@ def experiment(input,output):
         ll4= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda local +: ",ll4)
 
-        clf = MLPClassifier(random_state=1, max_iter=300).fit(ld.newdata[ld.dummyv], trainY)
-        ac5 = clf.score(testXm1[ld.dummyv],testY)
+        clf = MLPClassifier(random_state=1, max_iter=300).fit(ld.newdata[ld.dummyv+ld.cont], trainY)
+        ac5 = clf.score(testXm1[ld.dummyv+ld.cont],testY)
         print("Neural network acc·", ac5 )
-        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        y_prob = clf.predict_proba(testXm1[ld.dummyv+ld.cont])
         ll5= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood neural network: ",ll5)
 
 
-        clf = tree.DecisionTreeClassifier().fit(ld.newdata[ld.dummyv], trainY)
-        ac6 = clf.score(testXm1[ld.dummyv],testY)
+        clf = tree.DecisionTreeClassifier().fit(ld.newdata[ld.dummyv+ld.cont], trainY)
+        ac6 = clf.score(testXm1[ld.dummyv+ld.cont],testY)
         print("Classification tree", ac6 )
-        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        y_prob = clf.predict_proba(testXm1[ld.dummyv+ld.cont])
         ll6= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood classification tree: ",ll6)                
 
 
-        clf = HistGradientBoostingClassifier().fit(ld.newdata[ld.dummyv], trainY)
-        ac7 = clf.score(testXm1[ld.dummyv],testY)
+        clf = HistGradientBoostingClassifier().fit(ld.newdata[ld.dummyv+ld.cont], trainY)
+        ac7 = clf.score(testXm1[ld.dummyv+ld.cont],testY)
         print("Boosting tree", ac7 )
-        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        y_prob = clf.predict_proba(testXm1[ld.dummyv+ld.cont])
         ll7= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood boosting tree: ",ll7)                
 
 
 
-        clf = RandomForestClassifier().fit(ld.newdata[ld.dummyv], trainY)
-        ac8 = clf.score(testXm1[ld.dummyv],testY)
+        clf = RandomForestClassifier().fit(ld.newdata[ld.dummyv+ld.cont], trainY)
+        ac8 = clf.score(testXm1[ld.dummyv+ld.cont],testY)
         print("Classification random forest", ac8 )
-        y_prob = clf.predict_proba(testXm1[ld.dummyv])
+        y_prob = clf.predict_proba(testXm1[ld.dummyv+ld.cont])
         ll8= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood random forest: ",ll8)                
 

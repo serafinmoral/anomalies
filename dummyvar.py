@@ -16,7 +16,7 @@ def red(lista,K=20):
     for i in range(len(lista)):
         L = len(lista[i])
         if L>K:
-            print("changing")
+            # print("changing")
             pos = np.linspace(0,L-1, K).astype(np.int32)
             lista[i] = np.array([lista[i][j] for j in pos])
 
@@ -187,6 +187,9 @@ class dummyvar:
     def expandldad(self,K=20):
 
         clf = LinearDiscriminantAnalysis()
+        # print(self.dummycases[self.fvars[:self.nv]])
+
+        # print(self.dummycases[self.var])
         clf.fit(self.dummycases[self.fvars[:self.nv]], self.dummycases[self.var])
         self.lda = clf
         newvars = clf.transform(self.dummycases[self.fvars[:self.nv]])
@@ -215,7 +218,7 @@ class dummyvar:
             v='LDA_'+str(i)
             if len(values)>K:
                 print("Mirar")
-            print(v,values)
+            # print(v,values)
            
             self.na[v] = values
             discretedf[v].astype(CategoricalDtype(categories=values))
@@ -296,7 +299,7 @@ class dummyvar:
                 if snew > max(s1,s2)+0.01*abs(max(s1,s2)) :
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
-                    print("nueva variables rl",newvar,snew,s0,s1,s2,l1.union(l2))
+                    # print("nueva variables rl",newvar,snew,s0,s1,s2,l1.union(l2))
                     self.operations.append((2,5,i,j,l1.union(l2)))
                 else:
                     self.dummycases.drop(newvar, axis='columns')
@@ -347,7 +350,7 @@ class dummyvar:
                 if snew > max(s1,s2)+0.01*abs(max(s1,s2)):
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
-                    print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
+                    # print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
                     self.operations.append((2,5,i,j,l1.union(l2)))
                 else:
                     self.dummycases.drop(newvar, axis='columns')
@@ -399,7 +402,7 @@ class dummyvar:
                   if snew > best:
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
-                    print("nueva variable",newvar,snew,best)
+                    # print("nueva variable",newvar,snew,best)
                     self.operations.append((2,k,i,j,l1.union(l2)))
                     best = snew
                   else:

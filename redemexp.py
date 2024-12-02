@@ -113,7 +113,7 @@ def forward_sample_noisy(
 reader = BIFReader("Networks/barley.bif")
 net = reader.get_model()
 
-(dfo,df,pchan) = forward_sample_noisy(net,size=500)
+(dfo,df,pchan) = forward_sample_noisy(net,size=5000)
 
 
 
@@ -157,8 +157,8 @@ poc,pvec = em.predict(df2)
 
 for i in range (len(pchan2)):
    print("\n",pchan2[i], poc[i],"\n")
-   for var in pvec:
-      print(var,pvec[var][i])
+#    for var in pvec:
+#       print(var,pvec[var][i])
 
 
 

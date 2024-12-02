@@ -55,7 +55,13 @@ def exptree(dummy,v,datatest,bics,sizes,loglis,s=10):
 
 def sizet(t):
   return reduce(mul,t.cardinality[1:])*(t.cardinality[0]-1)
-  
+
+
+
+
+def sizet2(t):
+    return reduce(mul,t.shape[1:],1)*(t.shape[0]-1)
+
 def transformcat(data,cases):
    for v in data.columns:
       
@@ -167,10 +173,41 @@ def getprobst(tree,dataset):
     x = tree.getprob(line[1],s=2)  
     result.append(x)
   return np.array(result)
+
+def countingnon(input,output):
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  lines = filei.readlines()
+  for line in lines:
+   
+      line = line.strip()
+      reader = BIFReader("./Networks/"+line)
+      print(line)
+      network = reader.get_model()
+      total = 0
+      extr = 0
+      for v in network.nodes():
+          par = network.get_parents(v) 
+          # print(v,par) 
+          table = network.get_cpds(node=v).values
+
+          y = sizet2(table) 
+         
+          if len(par)>1 and y>64:
+              x = np.count_nonzero(table==0.0)
+              total += y
+              extr += x
+      if total>0:
+        fileo.write(line + " , "+ str(total)+ "," + str(extr)+ "," + str(extr/total)+ "," + str(1-extr/total)+"\n")
+          
+
+  
+  
  
 def experiment(input,output):
   
-  K=13
+  K=11
   filei = open(input,'r')
   fileo = open(output,"w")
   line = filei.readline()
@@ -216,6 +253,17 @@ def experiment(input,output):
           values = len(pd.unique(database[v]))
           print(v,par) 
 
+          print(v,pd.unique(database[v]),network.states[v])
+          print("PADRES")
+          remo = []
+          for  w in par:
+            print(w,pd.unique(database[w]),network.states[w])
+            if len(pd.unique(database[w])) == 1:
+              remo.append(w)
+
+          if remo:
+            par = [x for x in par if x not in remo]           
+
            
           if len(par)>1 and values == network.get_cardinality(v):
              bics = []
@@ -223,6 +271,7 @@ def experiment(input,output):
              loglis = []
              table = tfit(database,par,  v, network.states,s=2,weighted=False)
              size0 = sizet(table)
+             print(size0)
              if size0<=64:
                  print("Small size")
                  continue
@@ -258,7 +307,6 @@ def experiment(input,output):
 
              logr.dummycases = dummy2
              dummy = dummy2
-             dummy3 = dummy2.copy()
              explog(logr,datatest,bics,sizes,loglis)
              exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
           
@@ -267,25 +315,13 @@ def experiment(input,output):
              exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
 
              
-             
-             logr.dummycases = dummy3
-             dummy = dummy3
-             dummy.expandpairld()
-             explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+      
 
              
 
              
 
-             
- 
-
-             
-
-
-
-
+      
 
 
              indexm =  bics.index(max(bics))
@@ -368,7 +404,8 @@ def experiment(input,output):
 
 
 
+# countingnon('input','extreme')
 
-          
 
-experiment('input','output5')
+experiment('input','output6')
+º

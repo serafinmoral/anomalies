@@ -73,7 +73,7 @@ class ldad:
         
         if create:
             self.newdata = pd.get_dummies(self.attr, columns= self.disc, drop_first=True)
-            for x in self.attr.columns:
+            for x in self.disc:
                 cas = self.attr[x].dtype.categories
                 self.operations.append((0,x,cas[1:]))
                 for i in range(1,len(cas)):
@@ -83,7 +83,12 @@ class ldad:
             
             for x in self.fvars:
                 self.na[x] = [0,1]
-            
+
+            for x in self.cont:
+                self.fvars.append(x)
+                self.operations.append((2,x))
+
+
             self.var = self.var.astype("category")
             for x in self.cont:
                 self.newdata[x] = self.attr[x]
@@ -97,6 +102,9 @@ class ldad:
                 (h,var,cases) = op
                 for c in cases:
                    result[var+'_'+str(c)] =  data[var].apply(check,args= [c]) 
+            elif op[0] == 2:
+                (h,var) = op
+                result[var] = data[var]
             elif op[0] == 1:
                 (h,nld,vars,clf,transformer) = op
                 newvars = clf.transform(result[vars])
