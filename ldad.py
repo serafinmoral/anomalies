@@ -41,24 +41,29 @@ def cnewvar(row,listp,listn):
    x = 1 if all(row[v] == 1 for v in listp) and all(row[v] == 0 for v in listn) else 0
    return x
 
-# Class to define new variables from discrete variables 
-# in a problem of computing a conditional probability table
+# Class to define new variables from discrete and continuous variables for a classification problem using
+# linear discriminant analysis + discretization
+# Finally a logistict regression is applied
 
 
 class ldad:
 
+
+# It creates the basic data. Continuous variables are left unchanged
+# Discrete variables with n possible values are transformed into n-1 dummy 0-1 variables 
+
     def __init__(self,v,attr,create=True):
         
-        self.var = v
-        self.attr = attr
-        self.newdata = None
-        self.fvars = []
-        self.operations = []
-        self.na = dict()
-        self.nlda = 0
-        self.cont = []
-        self.disc = []
-        self.dummyv = []
+        self.var = v  # The class variable
+        self.attr = attr  # The attributes
+        self.newdata = None  # The dataframe with the values of the new created variables
+        self.fvars = [] # The names of the new variables that are effectively used in the classification
+        self.operations = [] # A list with the necessary operations to define and compute the new variables
+        self.na = dict() # The cases (possible values) of the discrete variables
+        self.nlda = 0 # A counter with the number of times that linear discriminat analysis has been applied, used to name the new variables
+        self.cont = [] # The list of continuous variables of the original attributes
+        self.disc = [] # The list of discrete variables of the original attributes
+        self.dummyv = [] # The list of dummy variables computed from the original discrete variables
 
 
 
@@ -95,6 +100,9 @@ class ldad:
             
             self.na['class'] = self.var.dtype.categories
 
+# This procedure consider a new dataframe (usually a test set) and computes a 
+# new dataframe with the same transformations used in the learning dataframe
+
     def transform(self,data):
         result = pd.DataFrame(index = data.index)
         for op in self.operations:
@@ -130,7 +138,7 @@ class ldad:
 
 
 
-
+# this procedure looks for all the dummy variables corresponding to any of the variables in the list cl 
 
     def findvars(self,cl):
         result = []
@@ -141,6 +149,9 @@ class ldad:
         return result
         
     
+# It creates new variables by applying linear discriminant analysis to vars (with respect to self.var ), discretization
+# and creation of the dummy variables associated with the discretized variables.
+
     def expandldad(self,vars,K=20):
 
         clf = LinearDiscriminantAnalysis()
