@@ -23,7 +23,6 @@ def red(lista,K=20):
     for i in range(len(lista)):
         L = len(lista[i])
         if L>K:
-            print("changing")
             pos = np.linspace(0,L-1, K).astype(np.int32)
             lista[i] = np.array([lista[i][j] for j in pos])
 
@@ -78,26 +77,58 @@ class ldad:
         
         if create:
             self.newdata = pd.get_dummies(self.attr, columns= self.disc, drop_first=True)
+            
             for x in self.disc:
                 cas = self.attr[x].dtype.categories
+                self.newdata[x] = self.attr[x]
+                self.na[x] = cas
                 self.operations.append((0,x,cas[1:]))
                 for i in range(1,len(cas)):
                     self.fvars.append(x+'_'+str(cas[i]))
                     self.dummyv.append(x+'_'+str(cas[i]))
-            self.nv = len(self.fvars)
             
-            for x in self.fvars:
-                self.na[x] = [0,1]
-
             for x in self.cont:
-                self.fvars.append(x)
                 self.operations.append((2,x))
+                self.fvars.append(x)
+
+            if self.cont:
+                transformer = MDLP(min_split = 0.01)  
+                transformer.fit(self.attr[self.cont],self.var.cat.codes)
+                disc = transformer.transform(self.attr[self.cont])
+
+                
+                listc = ['CONT_' + x for x in self.cont]
+
+
+
+
+
+                discretedf = pd.DataFrame(disc, columns= listc,index=self.newdata.index)
+                self.operations.append((3,transformer))
+
+
+                for i in range(len(self.cont)):
+                    x = self.cont[i]
+                    values = list(range(len(transformer.cut_points_[i])+1))
+                    v='CONT_'+x
+                    self.na[v] = values
+                    discretedf[v].astype(CategoricalDtype(categories=values))
+                    self.newdata[v] = discretedf[v]
+                    for z in values[1:]:
+                        self.newdata[v+'_'+str(z)] =  discretedf[v].apply(check,args= [z])
+                        # self.fvars.append(v+'_'+str(z))
+            
+                
+                
+
+
+    
 
 
             self.var = self.var.astype("category")
-            for x in self.cont:
-                self.newdata[x] = self.attr[x]
-            
+  
+            self.nv = len(self.fvars)
+
             self.na['class'] = self.var.dtype.categories
 
 # This procedure consider a new dataframe (usually a test set) and computes a 
@@ -113,6 +144,23 @@ class ldad:
             elif op[0] == 2:
                 (h,var) = op
                 result[var] = data[var]
+                
+            elif op[0] == 3:
+                (h,trans) = op
+                discrete = trans.transform(data[self.cont])
+                listcd = ["CONT_" +x for x in self.cont]
+                discretedf = pd.DataFrame(discrete, columns= listcd,index=data.index)
+
+                for i in range(discrete.shape[1]):
+                    values = list(range(len(trans.cut_points_[i])+1))
+                    x = self.cont[i]
+                    v='CONT_'+x
+                    discretedf[v].astype(CategoricalDtype(categories=values))
+                    for x in values[1:]:
+                        result[v+'_'+str(x)] =  discretedf[v].apply(check,args= [x])
+            
+                    
+                
             elif op[0] == 1:
                 (h,nld,vars,clf,transformer) = op
                 newvars = clf.transform(result[vars])
@@ -120,6 +168,7 @@ class ldad:
                 discrete = transformer.transform(newvars)
                 listc = ['LDA_'+str(nld)+'_'+str(i) for i in range(discrete.shape[1])]
                 discretedf = pd.DataFrame(discrete, columns= listc,index=data.index)
+                
 
                 for i in range(discrete.shape[1]):
                     values = list(range(len(transformer.cut_points_[i])+1))
@@ -127,12 +176,13 @@ class ldad:
                     discretedf[v].astype(CategoricalDtype(categories=values))
                     for x in values[1:]:
                         result[v+'_'+str(x)] =  discretedf[v].apply(check,args= [x])
+                
                     
 
 
 
               
-                
+         
                 
         return result       
 
@@ -142,11 +192,20 @@ class ldad:
 
     def findvars(self,cl):
         result = []
-        for v in self.newdata.columns:
+        for v in self.fvars:
             h = v.split('_')
-            if h[0] in cl:
+            if h[0] in self.disc and h[0] in cl:
                 result.append(v)
+            elif h[0] in self.cont and 'CONT_'+v in cl:
+                result.append(v)
+                
         return result
+
+    def expanddis(self,v):
+        values = self.na[v]
+        for z in values[1:]:
+            self.fvars.append(v+"_"+str(z))
+        
         
     
 # It creates new variables by applying linear discriminant analysis to vars (with respect to self.var ), discretization

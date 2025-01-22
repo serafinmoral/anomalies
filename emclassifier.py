@@ -58,8 +58,7 @@ class emclassifier:
 
         while True:
             self.alpha = np.average(self.weights)
-            print(self.alpha)
-            print(oldlike)
+           
 
             self.model.fit(self.attr,self.cl, sample_weight = self.weights)
             self.anomal = self.rcanomal()
@@ -97,6 +96,15 @@ class emclassifier:
         res = proba*self.alpha + probb*(1-self.alpha)
 
         return res
+
+    def score(self,data,cl):
+        matrix = self.model.predict_proba(data)
+        ind = [self.labels.index(x) for x in cl]
+        comp = matrix.argmax(axis=1)
+        resp = (ind==comp)
+        return np.count_nonzero(resp)/resp.size
+
+        
 
 
 

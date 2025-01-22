@@ -129,48 +129,58 @@ def experiment(input,output):
 
         labels = tars[v].dtype.categories    
         ld = ldad(trainY,trainX)
-        clf1 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata, trainY)
+        clf1 = LogisticRegression(random_state=0,penalty='l1',solver='saga').fit(ld.newdata[ld.fvars], trainY)
         testXm1 = ld.transform(testX)
-        ac1 = clf1.score(testXm1,testY)
+        ac1 = clf1.score(testXm1[ld.fvars],testY)
         print("Accuracy simple: ",ac1)
-        y_prob = clf1.predict_proba(testXm1)
+        y_prob = clf1.predict_proba(testXm1[ld.fvars])
         ll1 = log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood simple: ",ll1)
 
         
-        emclas = emclassifier(ld.newdata,trainY,clf1,labels)
+        emclas = emclassifier(ld.newdata[ld.fvars],trainY,clf1,labels)
         emclas.fit()
-        normal,probe = emclas.probanormal(testXm1,testY)
-        y_prob = emclas.predict_proba(testXm1)
+        normal,probe = emclas.probanormal(testXm1[ld.fvars],testY)
+        acem = emclas.score(testXm1[ld.fvars],testY)
+
+        print("Accuracy simple em: ",acem)
+
+        y_prob = emclas.predict_proba(testXm1[ld.fvars])
+   
         ll1em= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood simple em: ",ll1em)
 
-        ld.expandldad(ld.fvars.copy())
 
-        clf2 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter = 300).fit(ld.newdata, trainY)
+
+        clf2 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter = 300).fit(ld.newdata[ld.fvars], trainY)
         testXm2 = ld.transform(testX)
-        ac2 = clf2.score(testXm2,testY)
+        ac2 = clf2.score(testXm2[ld.fvars],testY)
         print("Accuracy lda: ",ac2)
         
+        y_prob = clf2.predict_proba(testXm2[ld.fvars])
+
         
         ll2= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda: ",ll2)
         
+        ld2 = ldad(trainY,trainX)
 
-        net = createnet(trainX,trainY)
+        net = createnet(ld2.newdata[ld2.disc + ['CONT_' +x for x in ld2.cont] ],trainY)
         cliques = nx.find_cliques(net)
 
-        ld2 = ldad(trainY,trainX)
 
         for c in cliques:
            if len(c)>1:
                 nvars = ld2.findvars(c)
                 ld2.expandldad(nvars)
-        clf3 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld2.newdata, trainY)
+           else:
+              v = c.pop()
+              ld2.expanddis(v)
+        clf3 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld2.newdata[ld2.fvars], trainY)
         testXm3 = ld2.transform(testX)
-        ac3 = clf3.score(testXm3,testY)
+        ac3 = clf3.score(testXm3[ld2.fvars],testY)
         print("Accuracy lda local: ",ac3)
-        y_prob = clf3.predict_proba(testXm3)
+        y_prob = clf3.predict_proba(testXm3[ld2.fvars])
         ll3= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda local: ",ll3)
 
@@ -179,14 +189,17 @@ def experiment(input,output):
 
         cliques = nx.find_cliques(net)
         for c in cliques:
-           if len(c)>1:
-                nvars = ld.findvars(c)
-                ld.expandldad(nvars)
-        clf4 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld.newdata, trainY)
+            if len(c)>1:
+                nvars = ld2.findvars(c)
+                ld2.expandldad(nvars)
+            else:
+              v = c.pop()
+              ld2.expanddis(v)
+        clf4 = LogisticRegression(random_state=0,penalty='l1',solver='saga',max_iter=300).fit(ld.newdata[ld.fvars], trainY)
         testXm4 = ld.transform(testX)
-        ac4 = clf4.score(testXm4,testY)
-        print("Accuracy lda local: ",ac4)
-        y_prob = clf4.predict_proba(testXm4)
+        ac4 = clf4.score(testXm4[ld.fvars],testY)
+        print("Accuracy lda local +: ",ac4)
+        y_prob = clf4.predict_proba(testXm4[ld.fvars])
         ll4= log_loss(testY, y_prob,labels = labels) 
         print("Loglikelihood lda local +: ",ll4)
 
