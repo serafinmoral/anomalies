@@ -1,4 +1,4 @@
-from pgmpy.estimators import BDeuScore
+from pgmpy.estimators import BDeu
 import math
 from dummyvar import *
 
@@ -32,7 +32,7 @@ def entropy(freq,s):
 
 def select(data,features,target,names,s, bas=[]):
   scores = dict()
-  estimator = BDeuScore(data=data, state_names=names, equivalent_sample_size=s)
+  estimator = BDeu(data=data, state_names=names, equivalent_sample_size=s)
   for x in features:
     bas.append(x)
     scores[x] = estimator.local_score(target,bas) 

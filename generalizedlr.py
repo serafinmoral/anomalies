@@ -175,7 +175,7 @@ class generalizedlr:
 
     def fitexpand(self):
         self.dummycases.expandpair()
-        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
         dummy = self.dummycases.dummycases
 
         model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
@@ -183,7 +183,7 @@ class generalizedlr:
         self.model = model
 
     def fits(self):
-        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
         # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
         dummy = self.dummycases.dummycases
@@ -193,7 +193,7 @@ class generalizedlr:
 
 
     def fit(self):
-        model = LogisticRegression(multi_class='auto', solver='liblinear', max_iter = 200, penalty='l1')
+        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
         # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
         dummy = self.dummycases.dummycases

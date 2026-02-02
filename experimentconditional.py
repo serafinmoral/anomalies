@@ -6,7 +6,7 @@ import numpy as np
 import math
 from pgmpy.readwrite import BIFReader
 from pgmpy.sampling.Sampling import BayesianModelSampling
-from pgmpy.estimators import BayesianEstimator,BDeuScore, HillClimbSearch
+from pgmpy.estimators import BayesianEstimator,BDeu, HillClimbSearch
 from pgmpy.estimators import TreeSearch
 from pgmpy.factors.discrete import TabularCPD
 from pgmpy.models import BayesianNetwork
@@ -397,7 +397,133 @@ def experiment(input,output):
            
 
 
+ 
+ 
+def experiments(input,output):
+  
+  K=5
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizesa = list(map(int, line.split()))
 
+  
+  lines = filei.readlines()
+  
+  dls = dict()
+  dss = dict()
+
+  dls3 = dict()
+  dss3 = dict()
+
+  
+  for line in lines:
+      line = line.strip()
+      reader = BIFReader("./Networks/"+line)
+      print(line)
+      
+
+      network = reader.get_model()
+      
+
+        
+      sampler = BayesianModelSampling(network)
+      datatest = sampler.forward_sample(size=10000)
+      # datatestn = convert(datatest,network.states)
+      transformcat(datatest, network.states)
+
+      
+
+      for x in sizesa:
+        lls = []
+        ss = []
+        lls3 = []
+        ss3 = []
+        
+        database = sampler.forward_sample(size=x)
+        transformcat(database, network.states)
+
+
+
+
+        for v in network.nodes():
+          par = network.get_parents(v) 
+          values = len(pd.unique(database[v]))
+
+          print(v,pd.unique(database[v]),network.states[v])
+          remo = []
+          for  w in par:
+            print(w,pd.unique(database[w]),network.states[w])
+            if len(pd.unique(database[w])) == 1:
+              remo.append(w)
+
+          if remo:
+            par = [x for x in par if x not in remo]           
+
+           
+          if len(par)>1 and values == network.get_cardinality(v):
+             bics = []
+             sizes = []
+             loglis = []
+             bics3 = []
+             sizes3 = []
+             loglis3 = []
+             table = tfit(database,par,  v, network.states,s=2,weighted=False)
+             size0 = sizet(table)
+             print(size0)
+             if size0<=64:
+                 print("Small size")
+                 continue
+
+
+             for s in [1,2,5,10,15]:
+                table = tfit(database,par,  v, network.states,s=s,weighted=False)
+                size0 = sizet(table)
+
+                logli0 = valuate(table,datatest)
+                logli0s = valuate(table,database)
+                bic0 = logli0s*database.shape[0] - size0             
+                bics.append(bic0)
+                sizes.append(size0)
+                loglis.append(logli0)
+
+             for s in [1,2,5,10,15]:
+                tree = probabilitytree()
+                tree.fit(database,par,v, names = network.states,s=s)
+                logli3 = tree.valuate(datatest)
+                logli3s = tree.valuate(database)
+                size3 = tree.size()
+                bic3 = logli3s*database.shape[0] - size3
+                bics3.append(bic3)
+                sizes3.append(size3)
+                loglis3.append(logli3)
+
+             
+
+             
+
+      
+
+
+
+             
+             sal = line+ ',' + str(x) + ','
+             
+             for i in range(len(loglis)):
+                 sal = str(loglis[i])+ ',' + str(sizes[i]) + ","  + str(loglis3[i])+ ',' + str(sizes3[i]) + "\n"
+            
+    
+             
+             
+             fileo.write(sal)
+             
+             
+                
+   
+  fileo.close()
+          
+   
+             
         
 
 
@@ -407,5 +533,5 @@ def experiment(input,output):
 # countingnon('input','extreme')
 
 
-experiment('input','output6')
+experiments('input','outputexps')
 º

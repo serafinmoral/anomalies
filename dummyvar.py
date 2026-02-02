@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-from pgmpy.estimators import BicScore,BDeuScore
+from pgmpy.estimators import BIC,BDeu
 import math
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import itertools
@@ -315,7 +315,7 @@ class dummyvar:
     def expandpair(self,s=2):
      
 
-        estimator = BicScore(data=self.dummycases, state_names=self.na)
+        estimator = BIC(data=self.dummycases, state_names=self.na)
         i = 0
         j = 1
         H = (self.nv)
@@ -343,17 +343,18 @@ class dummyvar:
                     j+=1
                     continue
                    
-                self.dummycases[newvar] = (1-self.dummycases[v1])*(1-self.dummycases[v2]) + self.dummycases[v1]*self.dummycases[v2]
+                estimator.data[newvar] = (1-estimator.data[v1])*(1-estimator.data[v2]) + estimator.data[v1]*estimator.data[v2]
                 s2 = estimator.local_score(self.var,[v2])
 
                 snew = estimator.local_score(self.var,[newvar])
                 if snew > max(s1,s2)+0.01*abs(max(s1,s2)):
                     self.fvars.append(newvar)
                     self.na[newvar] = [0,1]
+                    self.dummycases[newvar] = estimator.data[newvar]
                     # print("nueva variable rl",newvar,snew,s1,s2,l1.union(l2))
                     self.operations.append((2,5,i,j,l1.union(l2)))
                 else:
-                    self.dummycases.drop(newvar, axis='columns')
+                    estimator.data.drop(newvar, axis='columns')
                 j+=1
             
             i+=1
