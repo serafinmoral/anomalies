@@ -220,8 +220,9 @@ def experiment(input,output):
   dss = dict()
 
   
-  for line in lines:
-      line = line.strip()
+  for info in lines:
+      (line,reps) = info.split()
+      rep = int(reps)
       reader = BIFReader("./Networks/"+line)
       print(line)
       
@@ -245,10 +246,11 @@ def experiment(input,output):
         database = sampler.forward_sample(size=x)
         transformcat(database, network.states)
 
+        for j in range(rep):
 
 
 
-        for v in network.nodes():
+         for v in network.nodes():
           par = network.get_parents(v) 
           values = len(pd.unique(database[v]))
           print(v,par) 
@@ -269,7 +271,7 @@ def experiment(input,output):
              bics = []
              sizes = []
              loglis = []
-             table = tfit(database,par,  v, network.states,s=2,weighted=False)
+             table = tfit(database,par,  v, network.states,s=15,weighted=False)
              size0 = sizet(table)
              print(size0)
              if size0<=64:
@@ -284,7 +286,7 @@ def experiment(input,output):
 
 
              tree = probabilitytree()
-             tree.fit(database,par,v, names = network.states,s=10)
+             tree.fit(database,par,v, names = network.states,s=15)
              logli3 = tree.valuate(datatest)
              logli3s = tree.valuate(database)
              size3 = tree.size()
@@ -476,7 +478,7 @@ def experiments(input,output):
              bics3 = []
              sizes3 = []
              loglis3 = []
-             table = tfit(database,par,  v, network.states,s=2,weighted=False)
+             table = tfit(database,par,  v, network.states,s=s,weighted=False)
              size0 = sizet(table)
              print(size0)
              if size0<=64:
@@ -487,11 +489,7 @@ def experiments(input,output):
              for s in [1,2,5,10,15]:
                 table = tfit(database,par,  v, network.states,s=s,weighted=False)
                 size0 = sizet(table)
-
                 logli0 = valuate(table,datatest)
-                logli0s = valuate(table,database)
-                bic0 = logli0s*database.shape[0] - size0             
-                bics.append(bic0)
                 sizes.append(size0)
                 loglis.append(logli0)
                 
@@ -499,11 +497,8 @@ def experiments(input,output):
              for s in [1,2,5,10,15]:
                 tree = probabilitytree()
                 tree.fit(database,par,v, names = network.states,s=s)
-                logli3 = tree.valuate(datatest)
-                logli3s = tree.valuate(database)
+                logli3 = tree.valuate(datatest,s=s)
                 size3 = tree.size()
-                bic3 = logli3s*database.shape[0] - size3
-                bics3.append(bic3)
                 sizes3.append(size3)
                 loglis3.append(logli3)
 
@@ -615,4 +610,4 @@ def counttables(input,output):
 # countingnon('input','extreme')
 
 
-experiments('input','outexps')
+experiments('input','outs')

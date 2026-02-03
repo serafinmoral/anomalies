@@ -308,13 +308,13 @@ class probabilitytree:
      
      
   
-  def valuate(self,data):
+  def valuate(self,data,s):
     s = data.shape[0]
     result = 0.0
 
     for line in data.iterrows():
     
-      x = self.getprob(line[1],s=2)  
+      x = self.getprob(line[1],s=s)  
       result += math.log(x)
     return result/s
 
