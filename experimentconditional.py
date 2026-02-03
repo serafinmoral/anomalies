@@ -417,11 +417,18 @@ def experiments(input,output):
   dss3 = dict()
 
   
-  for line in lines:
-      line = line.strip()
+  for info in lines:
+
+      (line,reps) = info.split()
+      rep = int(reps)
       reader = BIFReader("./Networks/"+line)
       print(line)
       
+      sal = 'net, size'
+      for s in [1,2,5,10,15]:
+          sal = "," + 'logtable' + str(s) + "," + 'sizetable' + str(s) + ',' + 'logtree'+ str(s) + ',' + 'sizetree'+ str(s)
+      sal = sal+'\n'
+
 
       network = reader.get_model()
       
@@ -435,6 +442,8 @@ def experiments(input,output):
       
 
       for x in sizesa:
+
+       for j in range(rep):
         lls = []
         ss = []
         lls3 = []
@@ -442,7 +451,6 @@ def experiments(input,output):
         
         database = sampler.forward_sample(size=x)
         transformcat(database, network.states)
-
 
 
 
@@ -474,7 +482,7 @@ def experiments(input,output):
              if size0<=64:
                  print("Small size")
                  continue
-
+             
 
              for s in [1,2,5,10,15]:
                 table = tfit(database,par,  v, network.states,s=s,weighted=False)
@@ -486,6 +494,7 @@ def experiments(input,output):
                 bics.append(bic0)
                 sizes.append(size0)
                 loglis.append(logli0)
+                
 
              for s in [1,2,5,10,15]:
                 tree = probabilitytree()
@@ -507,12 +516,12 @@ def experiments(input,output):
 
 
              
-             sal = line+ ',' + str(x) + ','
+             sal = line+ ',' + str(x) 
              
              for i in range(len(loglis)):
-                 sal = str(loglis[i])+ ',' + str(sizes[i]) + ","  + str(loglis3[i])+ ',' + str(sizes3[i]) + "\n"
+                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) + ","  + str(loglis3[i])+ ',' + str(sizes3[i]) 
             
-    
+             sal = sal +"\n"
              
              
              fileo.write(sal)
@@ -526,6 +535,79 @@ def experiments(input,output):
              
         
 
+ 
+def counttables(input,output):
+  
+  K=5
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizesa = list(map(int, line.split()))
+
+  
+  lines = filei.readlines()
+  
+  dls = dict()
+  dss = dict()
+
+  dls3 = dict()
+  dss3 = dict()
+
+  
+  for line in lines:
+      line = line.strip()
+      reader = BIFReader("./Networks/"+line)
+      print(line)
+      
+      count = 0
+      network = reader.get_model()
+      
+
+        
+      sampler = BayesianModelSampling(network)
+      database = sampler.forward_sample(size=500)
+      # datatestn = convert(datatest,network.states)
+
+      
+
+      
+        
+      transformcat(database, network.states)
+
+
+
+      for v in network.nodes():
+          par = network.get_parents(v) 
+          values = len(pd.unique(database[v]))
+
+          remo = []
+          for  w in par:
+            print(w,pd.unique(database[w]),network.states[w])
+            if len(pd.unique(database[w])) == 1:
+              remo.append(w)
+
+          if remo:
+            par = [x for x in par if x not in remo]           
+
+           
+          if len(par)>1:
+             
+             table = tfit(database,par,  v, network.states,s=2,weighted=False)
+             size0 = sizet(table)
+             print(size0)
+             if size0<=64:
+                 print("Small size")
+             else:
+                 count+=1
+             
+      fileo.write(line + '  ' + str(count) + "\n") 
+
+
+             
+             
+             
+             
+                
 
 
 
@@ -533,5 +615,4 @@ def experiments(input,output):
 # countingnon('input','extreme')
 
 
-experiments('input','outputexps')
-º
+experiments('input','outexps')

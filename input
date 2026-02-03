@@ -1,16 +1,13 @@
 500 5000 10000
-alarm.bif
-andes.bif
-barley.bif
-child.bif
-diabetes.bif
-hailfinder.bif
-hepar2.bif
-insurance.bif
-link.bif
-mildew.bif
-pathfinder.bif
-pigs.bif
-water.bif
-win95pts.bif
-munin.bif
+alarm.bif 15
+barley.bif 2
+diabetes.bif 1
+hailfinder.bif 5
+hepar2.bif 5
+insurance.bif 8
+link.bif 1
+mildew.bif 2
+pathfinder.bif 1
+water.bif 4
+win95pts.bif 15
+munin.bif 1
