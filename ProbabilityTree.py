@@ -293,7 +293,7 @@ class probabilitytree:
     else:
       return(sum([self.children[x].size() for x in self.children]))
 
-  def getprob(self,values,s=2):
+  def getprob(self,values,s):
     v = self.node
 
     if not self.leaf:
@@ -309,14 +309,14 @@ class probabilitytree:
      
   
   def valuate(self,data,s):
-    s = data.shape[0]
+    n = data.shape[0]
     result = 0.0
 
     for line in data.iterrows():
     
       x = self.getprob(line[1],s=s)  
       result += math.log(x)
-    return result/s
+    return result/n
 
 
   

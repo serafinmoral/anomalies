@@ -472,10 +472,8 @@ def experiments(input,output):
 
            
           if len(par)>1 and values == network.get_cardinality(v):
-             bics = []
              sizes = []
              loglis = []
-             bics3 = []
              sizes3 = []
              loglis3 = []
              table = tfit(database,par,  v, network.states,s=s,weighted=False)
