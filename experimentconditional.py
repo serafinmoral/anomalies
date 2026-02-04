@@ -401,11 +401,12 @@ def experiment(input,output):
 
  
  
-def experiments(input,output):
+def experimentprev(input,output):
   
-  K=5
+  
   filei = open(input,'r')
-  fileo = open(output,"w")
+  fileos = open('outs',"w")
+  fileol = open('outl',"w")
   line = filei.readline()
   sizesa = list(map(int, line.split()))
 
@@ -423,13 +424,23 @@ def experiments(input,output):
 
       (line,reps) = info.split()
       rep = int(reps)
-      reader = BIFReader("./Networks/"+line)
+      reader = BIFReader("./Networks/"+line)  
       print(line)
       
       sal = 'net, size'
       for s in [1,2,5,10,15]:
-          sal = "," + 'logtable' + str(s) + "," + 'sizetable' + str(s) + ',' + 'logtree'+ str(s) + ',' + 'sizetree'+ str(s)
+          sal = sal+"," + 'logtable' + str(s) + "," + 'sizetable' + str(s) + ',' + 'logtree'+ str(s) + ',' + 'sizetree'+ str(s)
       sal = sal+'\n'
+
+      fileos.write(sal)
+
+
+      sal = 'net, size'
+      for l in [0.01,0.05,0.1,0.5,1,2,4]:
+          sal = "," + 'loglr' + str(l) + "," + 'sizelr' + str(l) 
+      sal = sal+'\n'
+
+      fileol.write(sal)
 
 
       network = reader.get_model()
@@ -437,11 +448,11 @@ def experiments(input,output):
 
         
       sampler = BayesianModelSampling(network)
-      datatest = sampler.forward_sample(size=10000)
+      datatest = sampler.forward_sample(size=1000)
       # datatestn = convert(datatest,network.states)
       transformcat(datatest, network.states)
 
-      
+      sizesa = [500]
 
       for x in sizesa:
 
@@ -476,6 +487,7 @@ def experiments(input,output):
              loglis = []
              sizes3 = []
              loglis3 = []
+             bics = []
              table = tfit(database,par,  v, network.states,s=s,weighted=False)
              size0 = sizet(table)
              print(size0)
@@ -499,7 +511,31 @@ def experiments(input,output):
                 size3 = tree.size()
                 sizes3.append(size3)
                 loglis3.append(logli3)
+             
+             sal = line+ ',' + str(x) 
+             
 
+
+             for i in range(len(loglis)):
+                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) + ","  + str(loglis3[i])+ ',' + str(sizes3[i]) 
+            
+             sal = sal +"\n"
+             
+             
+             fileos.write(sal)
+
+             
+             sizes = []
+             loglis = []
+             bics = []
+             
+             for l in [0.01,0.05,0.1,0.5,1,2,4]:                
+              logr = generalizedlr(v,par,database,l=l)
+              explog(logr,datatest,bics,sizes,loglis)               
+               
+                
+
+            
              
 
              
@@ -512,7 +548,119 @@ def experiments(input,output):
              sal = line+ ',' + str(x) 
              
              for i in range(len(loglis)):
-                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) + ","  + str(loglis3[i])+ ',' + str(sizes3[i]) 
+                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) 
+            
+             sal = sal +"\n"
+             
+             
+             fileol.write(sal)
+            
+   
+  fileos.close()
+  fileol.close()
+          
+   
+             
+        
+
+ 
+ 
+def experimentlambda(input,output):
+  
+  K=5
+  filei = open(input,'r')
+  fileo = open(output,"w")
+  line = filei.readline()
+  sizesa = list(map(int, line.split()))
+
+  
+  lines = filei.readlines()
+  
+  sizesa = [1000]
+
+  
+  for info in lines:
+
+      (line,reps) = info.split()
+      rep = int(reps)
+      reader = BIFReader("./Networks/"+line)
+      print(line)
+      
+      sal = 'net, size'
+      for l in [0.01,0.05,0.1,0.5,1,2,4]:
+          sal = "," + 'loglr' + str(l) + "," + 'sizelr' + str(l) 
+      sal = sal+'\n'
+
+
+      network = reader.get_model()
+      
+
+        
+      sampler = BayesianModelSampling(network)
+      datatest = sampler.forward_sample(size=10000)
+      # datatestn = convert(datatest,network.states)
+      transformcat(datatest, network.states)
+
+      
+
+      for x in sizesa:
+
+       for j in range(rep):
+        
+        
+        database = sampler.forward_sample(size=x)
+        transformcat(database, network.states)
+
+
+
+        for v in network.nodes():
+          par = network.get_parents(v) 
+          values = len(pd.unique(database[v]))
+
+          print(v,pd.unique(database[v]),network.states[v])
+          remo = []
+          for  w in par:
+            print(w,pd.unique(database[w]),network.states[w])
+            if len(pd.unique(database[w])) == 1:
+              remo.append(w)
+
+          if remo:
+            par = [x for x in par if x not in remo]           
+
+           
+          if len(par)>1 and values == network.get_cardinality(v):
+             sizes = []
+             loglis = []
+             
+             bics = []
+             table = tfit(database,par,  v, network.states,s=s,weighted=False)
+             size0 = sizet(table)
+             print(size0)
+             if size0<=64:
+                 print("Small size")
+                 continue
+             
+
+             for l in [0.01,0.05,0.1,0.5,1,2,4]:                
+              logr = generalizedlr(v,par,database)
+              explog(logr,datatest,bics,sizes,loglis,l=l)               
+               
+                
+
+            
+             
+
+             
+
+      
+
+
+
+             
+             sal = line+ ',' + str(x) 
+             
+             for i in range(len(loglis)):
+                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) 
             
              sal = sal +"\n"
              
@@ -525,9 +673,6 @@ def experiments(input,output):
   fileo.close()
           
    
-             
-        
-
  
 def counttables(input,output):
   
@@ -608,4 +753,4 @@ def counttables(input,output):
 # countingnon('input','extreme')
 
 
-experiments('input','outs')
+experimentprev('input','outs')

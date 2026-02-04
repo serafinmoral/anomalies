@@ -34,7 +34,7 @@ def createformula(target,attributes):
 class generalizedlr:
 
 
-    def __init__(self, v, par, data):
+    def __init__(self, v, par, data,l=1):
         self.var = v
         self.parents = par
         self.dataset = data
@@ -43,6 +43,7 @@ class generalizedlr:
         self.dummycases = dummyvar(v,par,data)
         self.model = None
         self.nv = len(self.dummycases.fvars)
+        self.l = l
 
 
     def prepare(self):
@@ -175,7 +176,7 @@ class generalizedlr:
 
     def fitexpand(self):
         self.dummycases.expandpair()
-        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
+        model = LogisticRegression(solver='saga', max_iter = 200, l1_ratio = 1.0,C=1/self.l)
         dummy = self.dummycases.dummycases
 
         model.fit(dummy[self.dummycases.fvars] , dummy[self.var])
@@ -183,7 +184,7 @@ class generalizedlr:
         self.model = model
 
     def fits(self):
-        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
+        model = LogisticRegression(solver='saga', max_iter = 200, l1_ratio = 1.0,C=1/self.l)
         # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
 
         dummy = self.dummycases.dummycases
@@ -193,8 +194,7 @@ class generalizedlr:
 
 
     def fit(self):
-        model = LogisticRegression(solver='saga', max_iter = 200, penalty='l1')
-        # model = LogisticRegression(multi_class='auto', solver='lbfgs', max_iter = 200, penalty='l2')
+        model = LogisticRegression(solver='saga', max_iter = 200, l1_ratio = 1.0,C=1/self.l)
 
         dummy = self.dummycases.dummycases
 
