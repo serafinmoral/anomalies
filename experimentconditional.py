@@ -40,10 +40,10 @@ def explog(logr,datatest,bics,sizes,loglis):
 def exptree(dummy,v,datatest,bics,sizes,loglis,s=10):
 
     tree2 = probabilitytree()
-    tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=10)
-    logli4 = tree2.valuate(dummy.transform(datatest))
+    tree2.fit(dummy.dummycases,dummy.fvars,v, names = dummy.na,s=s)
+    logli4 = tree2.valuate(dummy.transform(datatest),s=s)
     size4 = tree2.size()
-    logli4s = tree2.valuate(dummy.dummycases)
+    logli4s = tree2.valuate(dummy.dummycases,s=s)
     bic4 =  logli4s*dummy.dummycases.shape[0] - size4
     bics.append(bic4)
     sizes.append(size4)
@@ -216,8 +216,15 @@ def experiment(input,output):
   
   lines = filei.readlines()
   
-  dls = dict()
-  dss = dict()
+  # dls = dict()
+  # dss = dict()
+
+  sal = "net,size,logtable,sizetable,logtree,sizetree,loglrdummy,sizelrdummy,logtreedummy,sizetreedummy,  loglgpair,sizelgpair,   logtreepair,sizetreepair,loglgld,sizelgld,  logtreeld,sizetreeld,loglgldpair,sizeldlgpair,logtreeldpair,sizetreeldpair\n"
+
+  
+
+  fileo.write(sal)
+
 
   
   for info in lines:
@@ -239,16 +246,16 @@ def experiment(input,output):
       
 
       for x in sizesa:
-        fileo.write("*"+line+","+str(x)+"\n")
         lls = []
         ss = []
         
-        database = sampler.forward_sample(size=x)
-        transformcat(database, network.states)
+ 
 
         for j in range(rep):
 
 
+         database = sampler.forward_sample(size=x)
+         transformcat(database, network.states)
 
          for v in network.nodes():
           par = network.get_parents(v) 
@@ -287,110 +294,98 @@ def experiment(input,output):
 
              tree = probabilitytree()
              tree.fit(database,par,v, names = network.states,s=15)
-             logli3 = tree.valuate(datatest)
-             logli3s = tree.valuate(database)
+             logli3 = tree.valuate(datatest,s=15)
+             logli3s = tree.valuate(database,s=15)
              size3 = tree.size()
              bic3 = logli3s*database.shape[0] - size3
              bics.append(bic3)
              sizes.append(size3)
              loglis.append(logli3)
 
-             logr = generalizedlr(v,par,database)
+             logr = generalizedlr(v,par,database,l=0.5)
              explog(logr,datatest,bics,sizes,loglis)
              dummy = logr.dummycases
              dummy2 = dummy.copy()
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=15)
 
              dummy.expandpair()
              explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=15)
 
              dummy2.expandldad()
 
              logr.dummycases = dummy2
              dummy = dummy2
              explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=15)
           
              dummy.expandpair()
              explog(logr,datatest,bics,sizes,loglis)
-             exptree(dummy,v,datatest,bics,sizes,loglis,s=10)
+             exptree(dummy,v,datatest,bics,sizes,loglis,s=15)
+
+             sal = line+ ',' + str(x) 
 
              
+             for i in range(len(loglis)):
+                 sal = sal+','+ str(loglis[i])+ ',' + str(sizes[i]) 
+            
+             sal = sal +"\n"
+             
+             
+             fileo.write(sal)
+
+             
+
+             
+
       
 
-             
 
              
-
-      
-
-
-             indexm =  bics.index(max(bics))
-
-             loglib = loglis[indexm]
-             sizeb = sizes[indexm]
-
-             i=0
-             sal = ''
-             while i<len(loglis):
-                 sal1 = sal+str(loglis[i])+ ',' + str(loglis[i+1])+ ','
-                 sal2 = sal+str(sizes[i])+ ',' + str(sizes[i+1])+ ','
-                 sal3 = sal+str(bics[i])+ ',' + str(bics[i+1])+ ','
-                 print(loglis[i],loglis[i+1],sizes[i],sizes[i+1],bics[i],bics[i+1])
-                 i+=2
-             print(loglib,sizeb)
-             sal1 = sal1 + str(loglib)
-             sal2 = sal2 + str(sizeb)
-             sal3 = sal3[:-1]
-             loglis.append(loglib)
-             sizes.append(sizeb)
              
-             fileo.write(sal1+"\n"+sal2+"\n"+sal3+"\n")
-             
-             lls.append(loglis)
-             ss.append(sizes)
+            #  lls.append(loglis)
+            #  ss.append(sizes)
                 
-        for i in range(K):
-            lili = [z[i] for z in lls]
-            sizei = [z[i] for z in ss]
-            dls[(line,x,i)] = lili 
-            dss[(line,x,i)] = sizei 
-            if len(lili)>0:
-                averl =np.average(np.array(lili))
-                avers = np.average(np.array(sizei))
-                print(averl,avers)
-                fileo.write("$" +str(i) + "," + str(averl) + ","+str(avers) +"\n")
-        print("\n")
-  print("TOTALES")
-  totaldl = dict()
-  totalsl = dict()
-  for x in sizesa:
-      for i in range(K):
-        totaldl[(x,i)] = []
-        totalsl[(x,i)] = []
-  for line in lines:
-        line = line.strip()
-        for x in sizesa:
-            print("Network: ", line, "Size: ", x)
-            fileo.write("Network: " +  line +  "Size: " +  str(x)+"\n")
-            for i in range(K):
-                    totaldl[(x,i)] = totaldl[(x,i)] + dls[(line,x,i)]
-                    totalsl[(x,i)] = totalsl[(x,i)] + dss[(line,x,i)]
-                    if len(dls[(line,x,i)]) >0:
-                        avera = np.average(np.array(dls[(line,x,i)]))
-                        averso = np.average(np.array(dss[(line,x,i)]))
-                        print(avera,averso)
-                        fileo.write(str(avera) + "," +str(averso)+"\n" )
+        # for i in range(K):
+        #     lili = [z[i] for z in lls]
+        #     sizei = [z[i] for z in ss]
+        #     dls[(line,x,i)] = lili 
+        #     dss[(line,x,i)] = sizei 
+        #     if len(lili)>0:
+        #         averl =np.average(np.array(lili))
+        #         avers = np.average(np.array(sizei))
+        #         print(averl,avers)
+        #         fileo.write("$" +str(i) + "," + str(averl) + ","+str(avers) +"\n")
+        # print("\n")
+  # print("TOTALES")
+  # totaldl = dict()
+  # totalsl = dict()
+  # for x in sizesa:
+  #     for i in range(K):
+  #       totaldl[(x,i)] = []
+  #       totalsl[(x,i)] = []
+  # for line in lines:
+  #       line = line.strip()
+  #       for x in sizesa:
+  #           print("Network: ", line, "Size: ", x)
+  #           fileo.write("Network: " +  line +  "Size: " +  str(x)+"\n")
+  #           for i in range(K):
+  #                   totaldl[(x,i)] = totaldl[(x,i)] + dls[(line,x,i)]
+  #                   totalsl[(x,i)] = totalsl[(x,i)] + dss[(line,x,i)]
+  #                   if len(dls[(line,x,i)]) >0:
+  #                       avera = np.average(np.array(dls[(line,x,i)]))
+  #                       averso = np.average(np.array(dss[(line,x,i)]))
+  #                       print(avera,averso)
+  #                       fileo.write(str(avera) + "," +str(averso)+"\n" )
   
-  for x in sizes:
-      print("Size: ", x)
-      fileo.write("Size: " +  str(x))
-      for i in range(K):
-        avera = np.average(np.array(totaldl[(x,i)]))
-        averso = np.average(np.array(totalsl[(x,i)]))
-        print(avera,averso)
-        fileo.write(str(avera) + "," +str(averso) )
+  # for x in sizes:
+  #     print("Size: ", x)
+  #     fileo.write("Size: " +  str(x))
+  #     for i in range(K):
+  #       avera = np.average(np.array(totaldl[(x,i)]))
+  #       averso = np.average(np.array(totalsl[(x,i)]))
+  #       print(avera,averso)
+  #       fileo.write(str(avera) + "," +str(averso) )
   fileo.close()
           
    
@@ -405,8 +400,8 @@ def experimentprev(input,output):
   
   
   filei = open(input,'r')
-  fileos = open('outs',"w")
-  fileol = open('outl',"w")
+  fileos = open('outs2',"w")
+  fileol = open('outl2',"w")
   line = filei.readline()
   sizesa = list(map(int, line.split()))
 
@@ -750,7 +745,6 @@ def counttables(input,output):
 
 
 
-# countingnon('input','extreme')
+experimentprev('input2','salida')
 
-
-experimentprev('input','outs')
+# experiment('input','outexpg')
