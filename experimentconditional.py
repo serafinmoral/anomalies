@@ -745,6 +745,6 @@ def counttables(input,output):
 
 
 
-experimentprev('input2','salida')
+# experimentprev('input','salida')
 
-# experiment('input','outexpg')
+experiment('input','outexpg')
