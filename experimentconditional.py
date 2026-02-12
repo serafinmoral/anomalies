@@ -606,7 +606,7 @@ def experimentlambda(input,output):
         database = sampler.forward_sample(size=x)
         transformcat(database, network.states)
 
-
+        counter = 1
 
         for v in network.nodes():
           par = network.get_parents(v) 
@@ -634,7 +634,9 @@ def experimentlambda(input,output):
              if size0<=64:
                  print("Small size")
                  continue
-             
+             counter +=1
+             if counter<=165:
+                continue
 
              for l in [0.01,0.05,0.1,0.5,1,2,4]:                
               logr = generalizedlr(v,par,database)
@@ -747,4 +749,4 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input3.txt','outexpg3')
+experiment('input4.txt','outexpg4')
