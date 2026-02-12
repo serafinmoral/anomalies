@@ -1,0 +1,10 @@
+500 5000 10000
+hailfinder.bif 5
+hepar2.bif 5
+insurance.bif 8
+link.bif 1
+mildew.bif 2
+pathfinder.bif 1
+water.bif 12
+win95pts.bif 15
+munin.bif 1

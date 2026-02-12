@@ -414,7 +414,20 @@ def experimentprev(input,output):
   dls3 = dict()
   dss3 = dict()
 
-  
+  sal = 'net, size'
+  for s in [1,2,5,10,15]:
+          sal = sal+"," + 'logtable' + str(s) + "," + 'sizetable' + str(s) + ',' + 'logtree'+ str(s) + ',' + 'sizetree'+ str(s)
+  sal = sal+'\n'
+
+  fileos.write(sal)
+
+
+  sal = 'net, size'
+  for l in [0.01,0.05,0.1,0.5,1,2,4]:
+          sal = sal+"," + 'loglr' + str(l) + "," + 'sizelr' + str(l) 
+  sal = sal+'\n'
+
+  fileol.write(sal)
   for info in lines:
 
       (line,reps) = info.split()
@@ -422,20 +435,7 @@ def experimentprev(input,output):
       reader = BIFReader("./Networks/"+line)  
       print(line)
       
-      sal = 'net, size'
-      for s in [1,2,5,10,15]:
-          sal = sal+"," + 'logtable' + str(s) + "," + 'sizetable' + str(s) + ',' + 'logtree'+ str(s) + ',' + 'sizetree'+ str(s)
-      sal = sal+'\n'
-
-      fileos.write(sal)
-
-
-      sal = 'net, size'
-      for l in [0.01,0.05,0.1,0.5,1,2,4]:
-          sal = "," + 'loglr' + str(l) + "," + 'sizelr' + str(l) 
-      sal = sal+'\n'
-
-      fileol.write(sal)
+      
 
 
       network = reader.get_model()
@@ -747,4 +747,4 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input','outexpg')
+experiment('input3.txt','outexpg3')
