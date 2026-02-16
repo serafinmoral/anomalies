@@ -1,0 +1,13 @@
+Network, teoretical
+alarm.bif , 30 , 30, 30, 30
+barley.bif , 56, 35, 44, 46
+diabetes.bif,  241 
+hailfinder.bif,  30
+hepar2.bif  , 30
+insurance.bif ,  32
+link.bif  , 118
+mildew.bif ,  34
+pathfinder.bif ,  54
+water.bif  , 56
+win95pts.bif ,  30 
+munin.bif  , 227 

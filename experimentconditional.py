@@ -691,51 +691,60 @@ def counttables(input,output):
   
   for line in lines:
       line = line.strip()
+      (line,rep) = line.split()
       reader = BIFReader("./Networks/"+line)
       print(line)
       
-      count = 0
       network = reader.get_model()
       
+      fileo.write(line)
 
         
       sampler = BayesianModelSampling(network)
-      database = sampler.forward_sample(size=500)
-      # datatestn = convert(datatest,network.states)
-
       
-
       
-        
-      transformcat(database, network.states)
+      for size in sizesa:
+        count = 0
+        count2 = 0
+        for i in range(10):
+          database = sampler.forward_sample(size=size)
+          # datatestn = convert(datatest,network.states)
+
+          
+
+          
+            
+          transformcat(database, network.states)
 
 
 
-      for v in network.nodes():
-          par = network.get_parents(v) 
-          values = len(pd.unique(database[v]))
+          for v in network.nodes():
+              par = network.get_parents(v) 
+              values = len(pd.unique(database[v]))
 
-          remo = []
-          for  w in par:
-            print(w,pd.unique(database[w]),network.states[w])
-            if len(pd.unique(database[w])) == 1:
-              remo.append(w)
+              remo = []
+              for  w in par:
+                print(w,pd.unique(database[w]),network.states[w])
+                if len(pd.unique(database[w])) == 1:
+                  remo.append(w)
 
-          if remo:
-            par = [x for x in par if x not in remo]           
+              if remo:
+                par = [x for x in par if x not in remo]           
 
-           
-          if len(par)>1:
-             
-             table = tfit(database,par,  v, network.states,s=2,weighted=False)
-             size0 = sizet(table)
-             print(size0)
-             if size0<=64:
-                 print("Small size")
-             else:
-                 count+=1
-             
-      fileo.write(line + '  ' + str(count) + "\n") 
+
+              if len(par)>1:
+                
+                table = tfit(database,par,  v, network.states,s=2,weighted=False)
+                size0 = sizet(table)
+                print(size0)
+                if size0<=64:
+                    print("Small size")
+                else:
+                    count+=1
+                    if not values == network.get_cardinality(v):
+                      count2+=1
+        fileo.write(','+ str(count2/count))
+      fileo.write('\n')     
 
 
              
@@ -749,4 +758,6 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input4.txt','outexpg4')
+experiment('input6.txt','outexpg6')
+
+# counttables('input','outputtables')
