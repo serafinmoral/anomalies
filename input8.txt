@@ -1,2 +1,2 @@
 500 5000 10000
-pathfinder 1
+pathfinder.bif 1
