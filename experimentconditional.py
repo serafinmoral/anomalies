@@ -30,7 +30,8 @@ from dummyvar import *
 def explog(logr,datatest,bics,sizes,loglis):
     logr.fits()
     logli0 = logr.scorell(datatest)
-    bic0 = logr.akaike(logr.model)
+    # bic0 = logr.akaike(logr.model)
+    bic0 = 0
     size0 = size(logr.model)
     bics.append(bic0)
     sizes.append(size0)
