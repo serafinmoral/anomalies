@@ -758,6 +758,6 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input7.txt','outexpg7')
+experiment('input8.txt','outexpg8')
 
 # counttables('input','outputtables')
