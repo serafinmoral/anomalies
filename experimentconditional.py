@@ -257,6 +257,7 @@ def experiment(input,output):
 
          database = sampler.forward_sample(size=x)
          transformcat(database, network.states)
+         count = 0
 
          for v in network.nodes():
           par = network.get_parents(v) 
@@ -284,6 +285,9 @@ def experiment(input,output):
              print(size0)
              if size0<=64:
                  print("Small size")
+                 continue
+             count += 1
+             if count<=200:
                  continue
              logli0 = valuate(table,datatest)
              logli0s = valuate(table,database)
@@ -759,6 +763,6 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input8.txt','outexpg8')
+experiment('input9.txt','outexpg9')
 
 # counttables('input','outputtables')
