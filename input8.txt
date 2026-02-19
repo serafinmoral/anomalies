@@ -1,2 +1,2 @@
-munin 10000
-mildew.bif 2
+10000
+munin.bif 1
