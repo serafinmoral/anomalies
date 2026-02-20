@@ -287,7 +287,7 @@ def experiment(input,output):
                  print("Small size")
                  continue
              count += 1
-             if count<=200:
+             if count<=150:
                  continue
              logli0 = valuate(table,datatest)
              logli0s = valuate(table,database)
