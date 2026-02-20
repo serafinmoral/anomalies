@@ -287,7 +287,7 @@ def experiment(input,output):
                  print("Small size")
                  continue
              count += 1
-             if count<=150:
+             if 100<= count<100:
                  continue
              logli0 = valuate(table,datatest)
              logli0s = valuate(table,database)
@@ -763,6 +763,6 @@ def counttables(input,output):
 
 # experimentprev('input','salida')
 
-experiment('input9.txt','outexpg9')
+experiment('input9.txt','outexpg10')
 
 # counttables('input','outputtables')
